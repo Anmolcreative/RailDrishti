@@ -1,4 +1,4 @@
-# RailIQ
+# RailDrishti 
 
 > One delayed train becomes six. RailIQ stops the chain before it starts.
 
@@ -12,7 +12,7 @@
 
 India loses ₹22,000 crore annually from train delays. It's not a hardware problem — it's a reaction-time problem. Human controllers can't process conflicts across hundreds of trains fast enough. One late train cascades into six.
 
-RailIQ predicts the conflict before it happens and resolves it in 200ms.
+RailDrishti predicts the conflict before it happens and resolves it in 200ms.
 
 ---
 
