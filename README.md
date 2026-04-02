@@ -1,6 +1,6 @@
 # RailDrishti 
 
-> One delayed train becomes six. RailIQ stops the chain before it starts.
+> One delayed train becomes six. RailDrishti stops the chain before it starts.
 
 [![Hackfest 2026](https://img.shields.io/badge/Hackfest-2026-green?style=for-the-badge)](https://nmamit.nitte.edu.in)
 [![Track](https://img.shields.io/badge/Track-Logistics-blue?style=for-the-badge)]()
@@ -73,7 +73,7 @@ Speed advisory panel per train with estimated delay impact
 
 ## Why No New Hardware
 
-Axle counters, CTC panels, and GPS are already deployed across Indian Railways. RailIQ sits on top of existing infrastructure — no civil work, no signal changes, no procurement cycle.
+Axle counters, CTC panels, and GPS are already deployed across Indian Railways. RailDrishti sits on top of existing infrastructure — no civil work, no signal changes, no procurement cycle.
 
 ---
 
