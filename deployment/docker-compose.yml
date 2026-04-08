@@ -35,5 +35,15 @@ services:
     volumes:
       - influxdb-data:/var/lib/influxdb2
 
+  redis:
+    image: redis:7.2
+    container_name: redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+
 volumes:
   influxdb-data:
+  redis-data:
