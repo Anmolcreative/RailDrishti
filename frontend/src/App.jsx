@@ -13,7 +13,7 @@ const DUMMY_TRAINS = [
 ];
 
 function App() {
-  const [trains, setTrains] = useState(DUMMY_TRAINS);
+  const [selectedStation, setSelectedStation] = useState(null);
 
   // Simulate movement
   useEffect(() => {
@@ -63,7 +63,10 @@ function App() {
 
         {/* MAP */}
         <div style={{ flex: 1 }}>
-          <MapView trains={trains} />
+          <MapView 
+  trains={trains} 
+  onStationClick={(station) => setSelectedStation(station)} 
+/>
           {/* D3 CHART below map */}
           <div style={{ padding: '15px' }}>
             <DelayChart trains={trains} />
@@ -71,13 +74,13 @@ function App() {
         </div>
 
         {/* SIDEBAR */}
-        <ConflictSidebar 
+        <ConflictSidebar
   trains={trains}
+  selectedStation={selectedStation}
   onApprove={(id) => alert(`✅ AI recommendation approved for ${id}`)}
   onOverride={(id) => alert(`✋ Manual override set for ${id}`)}
   onMRDC={(id) => alert(`📡 Message sent to loco pilot of ${id} via MRDC!`)}
 />
-
       </div>
     </div>
   );
