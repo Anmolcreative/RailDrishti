@@ -1,0 +1,4 @@
+kafka-python==2.3.0
+influxdb-client==1.36.0
+requests==2.33.1
+redis==5.0.1
