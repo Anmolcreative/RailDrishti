@@ -1,8 +1,9 @@
-import Logo from './components/Logo';
 import { useState, useEffect } from 'react';
 import MapView from './components/MapView';
 import ConflictSidebar from './components/ConflictSidebar';
 import DelayChart from './components/DelayChart';
+import Logo from './components/Logo';
+import StationDashboard from './components/StationDashboard';
 
 const DUMMY_TRAINS = [
   { id: 'TN001', lat: 19.07, lng: 72.87, speed: 60, delay: 0, status: 'on_time' },
@@ -13,7 +14,9 @@ const DUMMY_TRAINS = [
 ];
 
 function App() {
+  const [trains, setTrains] = useState(DUMMY_TRAINS);
   const [selectedStation, setSelectedStation] = useState(null);
+  const [showStationDashboard, setShowStationDashboard] = useState(false);
 
   // Simulate movement
   useEffect(() => {
@@ -40,6 +43,16 @@ function App() {
   const atRisk = trains.filter(t => t.status === 'at_risk').length;
   const onTime = trains.filter(t => t.status === 'on_time').length;
 
+  // Show station dashboard if selected
+  if (showStationDashboard && selectedStation) {
+    return (
+      <StationDashboard
+        station={selectedStation}
+        onBack={() => setShowStationDashboard(false)}
+      />
+    );
+  }
+
   return (
     <div style={{ background: '#0a0a0a', color: 'white', minHeight: '100vh', fontFamily: 'monospace' }}>
 
@@ -63,10 +76,13 @@ function App() {
 
         {/* MAP */}
         <div style={{ flex: 1 }}>
-          <MapView 
-  trains={trains} 
-  onStationClick={(station) => setSelectedStation(station)} 
-/>
+          <MapView
+            trains={trains}
+            onStationClick={(station) => {
+              setSelectedStation(station);
+              setShowStationDashboard(true);
+            }}
+          />
           {/* D3 CHART below map */}
           <div style={{ padding: '15px' }}>
             <DelayChart trains={trains} />
@@ -75,12 +91,13 @@ function App() {
 
         {/* SIDEBAR */}
         <ConflictSidebar
-  trains={trains}
-  selectedStation={selectedStation}
-  onApprove={(id) => alert(`✅ AI recommendation approved for ${id}`)}
-  onOverride={(id) => alert(`✋ Manual override set for ${id}`)}
-  onMRDC={(id) => alert(`📡 Message sent to loco pilot of ${id} via MRDC!`)}
-/>
+          trains={trains}
+          selectedStation={selectedStation}
+          onApprove={(id) => alert(`✅ AI recommendation approved for ${id}`)}
+          onOverride={(id) => alert(`✋ Manual override set for ${id}`)}
+          onMRDC={(id) => alert(`📡 Message sent to loco pilot of ${id} via MRDC!`)}
+        />
+
       </div>
     </div>
   );
