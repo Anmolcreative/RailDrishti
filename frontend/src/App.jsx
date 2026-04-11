@@ -1,3 +1,4 @@
+import SearchBar from './components/SearchBar';
 import { useState, useEffect } from 'react';
 import MapView from './components/MapView';
 import ConflictSidebar from './components/ConflictSidebar';
@@ -59,6 +60,10 @@ function App() {
       {/* TOP BAR */}
       <div style={{ padding: '10px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #222' }}>
         <Logo />
+<SearchBar onStationSelect={(station) => {
+  setSelectedStation(station);
+  setShowStationDashboard(true);
+}} />
         <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
           <span>🟢 On Time: {onTime}</span>
           <span>🔴 Delayed: {delayed}</span>
