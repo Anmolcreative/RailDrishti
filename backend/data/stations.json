@@ -1,0 +1,804 @@
+{
+  "stations_100": [
+    {
+      "id": 0,
+      "name": "Bhopal Jn",
+      "lat": 23.2599,
+      "lng": 77.4126,
+      "congestion": 0.85,
+      "trains": 80
+    },
+    {
+      "id": 1,
+      "name": "Obaidullaganj",
+      "lat": 23.08,
+      "lng": 77.52,
+      "congestion": 0.6,
+      "trains": 45
+    },
+    {
+      "id": 2,
+      "name": "Budni",
+      "lat": 22.92,
+      "lng": 77.58,
+      "congestion": 0.45,
+      "trains": 38
+    },
+    {
+      "id": 3,
+      "name": "Powerkheda",
+      "lat": 22.81,
+      "lng": 77.63,
+      "congestion": 0.7,
+      "trains": 52
+    },
+    {
+      "id": 4,
+      "name": "Itarsi Jn",
+      "lat": 22.613,
+      "lng": 77.7639,
+      "congestion": 0.9,
+      "trains": 110
+    },
+    {
+      "id": 5,
+      "name": "Pipariya",
+      "lat": 22.75,
+      "lng": 78.35,
+      "congestion": 0.3,
+      "trains": 28
+    },
+    {
+      "id": 6,
+      "name": "Bina Jn",
+      "lat": 24.1772,
+      "lng": 78.1376,
+      "congestion": 0.75,
+      "trains": 65
+    },
+    {
+      "id": 7,
+      "name": "Vidisha",
+      "lat": 23.5251,
+      "lng": 77.8151,
+      "congestion": 0.5,
+      "trains": 40
+    },
+    {
+      "id": 8,
+      "name": "Sanchi",
+      "lat": 23.4793,
+      "lng": 77.7366,
+      "congestion": 0.35,
+      "trains": 22
+    },
+    {
+      "id": 9,
+      "name": "Ganj Basoda",
+      "lat": 24.0214,
+      "lng": 77.9367,
+      "congestion": 0.55,
+      "trains": 44
+    },
+    {
+      "id": 10,
+      "name": "Maqsi",
+      "lat": 23.15,
+      "lng": 77.6,
+      "congestion": 0.4,
+      "trains": 30
+    },
+    {
+      "id": 11,
+      "name": "Sehore",
+      "lat": 23.2042,
+      "lng": 77.0847,
+      "congestion": 0.42,
+      "trains": 32
+    },
+    {
+      "id": 12,
+      "name": "Hoshangabad",
+      "lat": 22.7484,
+      "lng": 77.7299,
+      "congestion": 0.65,
+      "trains": 55
+    },
+    {
+      "id": 13,
+      "name": "Bankhedi",
+      "lat": 22.67,
+      "lng": 77.85,
+      "congestion": 0.38,
+      "trains": 25
+    },
+    {
+      "id": 14,
+      "name": "Narsinghpur",
+      "lat": 22.9449,
+      "lng": 79.1936,
+      "congestion": 0.48,
+      "trains": 36
+    },
+    {
+      "id": 15,
+      "name": "Nagpur Jn",
+      "lat": 21.1458,
+      "lng": 79.0889,
+      "congestion": 0.82,
+      "trains": 95
+    },
+    {
+      "id": 16,
+      "name": "Wardha Jn",
+      "lat": 20.7453,
+      "lng": 78.6023,
+      "congestion": 0.6,
+      "trains": 48
+    },
+    {
+      "id": 17,
+      "name": "Sevagram",
+      "lat": 20.7742,
+      "lng": 78.6416,
+      "congestion": 0.3,
+      "trains": 20
+    },
+    {
+      "id": 18,
+      "name": "Gondia Jn",
+      "lat": 21.46,
+      "lng": 80.196,
+      "congestion": 0.55,
+      "trains": 42
+    },
+    {
+      "id": 19,
+      "name": "Balharshah",
+      "lat": 19.8568,
+      "lng": 79.3561,
+      "congestion": 0.68,
+      "trains": 58
+    },
+    {
+      "id": 20,
+      "name": "Jabalpur Jn",
+      "lat": 23.1815,
+      "lng": 79.9864,
+      "congestion": 0.78,
+      "trains": 72
+    },
+    {
+      "id": 21,
+      "name": "Katni Jn",
+      "lat": 23.8355,
+      "lng": 80.8474,
+      "congestion": 0.65,
+      "trains": 58
+    },
+    {
+      "id": 22,
+      "name": "Satna",
+      "lat": 24.5799,
+      "lng": 80.8328,
+      "congestion": 0.58,
+      "trains": 46
+    },
+    {
+      "id": 23,
+      "name": "Manikpur Jn",
+      "lat": 24.95,
+      "lng": 81.12,
+      "congestion": 0.5,
+      "trains": 40
+    },
+    {
+      "id": 24,
+      "name": "Allahabad Jn",
+      "lat": 25.4358,
+      "lng": 81.8463,
+      "congestion": 0.88,
+      "trains": 120
+    },
+    {
+      "id": 25,
+      "name": "Mirzapur",
+      "lat": 25.1435,
+      "lng": 82.5706,
+      "congestion": 0.52,
+      "trains": 42
+    },
+    {
+      "id": 26,
+      "name": "Varanasi Jn",
+      "lat": 25.3176,
+      "lng": 82.9739,
+      "congestion": 0.87,
+      "trains": 115
+    },
+    {
+      "id": 27,
+      "name": "Mughalsarai Jn",
+      "lat": 25.2795,
+      "lng": 83.1187,
+      "congestion": 0.8,
+      "trains": 90
+    },
+    {
+      "id": 28,
+      "name": "Gaya Jn",
+      "lat": 24.7955,
+      "lng": 84.9994,
+      "congestion": 0.7,
+      "trains": 68
+    },
+    {
+      "id": 29,
+      "name": "Dhanbad Jn",
+      "lat": 23.7956,
+      "lng": 86.4304,
+      "congestion": 0.75,
+      "trains": 78
+    },
+    {
+      "id": 30,
+      "name": "Asansol Jn",
+      "lat": 23.6854,
+      "lng": 86.9681,
+      "congestion": 0.72,
+      "trains": 70
+    },
+    {
+      "id": 31,
+      "name": "Durgapur",
+      "lat": 23.5204,
+      "lng": 87.3119,
+      "congestion": 0.6,
+      "trains": 50
+    },
+    {
+      "id": 32,
+      "name": "Barddhaman Jn",
+      "lat": 23.2324,
+      "lng": 87.8615,
+      "congestion": 0.65,
+      "trains": 60
+    },
+    {
+      "id": 33,
+      "name": "Kharagpur Jn",
+      "lat": 22.346,
+      "lng": 87.232,
+      "congestion": 0.78,
+      "trains": 80
+    },
+    {
+      "id": 34,
+      "name": "Tatanagar Jn",
+      "lat": 22.7838,
+      "lng": 86.202,
+      "congestion": 0.7,
+      "trains": 65
+    },
+    {
+      "id": 35,
+      "name": "Raipur Jn",
+      "lat": 21.2514,
+      "lng": 81.6296,
+      "congestion": 0.76,
+      "trains": 74
+    },
+    {
+      "id": 36,
+      "name": "Bilaspur Jn",
+      "lat": 22.0796,
+      "lng": 82.1391,
+      "congestion": 0.72,
+      "trains": 68
+    },
+    {
+      "id": 37,
+      "name": "Durg",
+      "lat": 21.1904,
+      "lng": 81.2849,
+      "congestion": 0.6,
+      "trains": 50
+    },
+    {
+      "id": 38,
+      "name": "Bhilai Power House",
+      "lat": 21.21,
+      "lng": 81.37,
+      "congestion": 0.45,
+      "trains": 35
+    },
+    {
+      "id": 39,
+      "name": "Itwari",
+      "lat": 21.1558,
+      "lng": 79.1012,
+      "congestion": 0.55,
+      "trains": 44
+    },
+    {
+      "id": 40,
+      "name": "Jhansi Jn",
+      "lat": 25.4547,
+      "lng": 78.5744,
+      "congestion": 0.88,
+      "trains": 88
+    },
+    {
+      "id": 41,
+      "name": "Gwalior Jn",
+      "lat": 26.2183,
+      "lng": 78.1828,
+      "congestion": 0.82,
+      "trains": 85
+    },
+    {
+      "id": 42,
+      "name": "Kanpur Central",
+      "lat": 26.4499,
+      "lng": 80.3319,
+      "congestion": 0.95,
+      "trains": 280
+    },
+    {
+      "id": 43,
+      "name": "Lucknow NR",
+      "lat": 26.8467,
+      "lng": 80.9462,
+      "congestion": 0.9,
+      "trains": 200
+    },
+    {
+      "id": 44,
+      "name": "Agra Cantt",
+      "lat": 27.1767,
+      "lng": 78.0081,
+      "congestion": 0.8,
+      "trains": 90
+    },
+    {
+      "id": 45,
+      "name": "Mathura Jn",
+      "lat": 27.4924,
+      "lng": 77.6737,
+      "congestion": 0.75,
+      "trains": 78
+    },
+    {
+      "id": 46,
+      "name": "Etawah",
+      "lat": 26.78,
+      "lng": 79.02,
+      "congestion": 0.55,
+      "trains": 44
+    },
+    {
+      "id": 47,
+      "name": "Tundla Jn",
+      "lat": 27.21,
+      "lng": 78.24,
+      "congestion": 0.6,
+      "trains": 52
+    },
+    {
+      "id": 48,
+      "name": "Firozabad",
+      "lat": 27.15,
+      "lng": 78.39,
+      "congestion": 0.5,
+      "trains": 40
+    },
+    {
+      "id": 49,
+      "name": "Shivaji Bridge",
+      "lat": 28.642,
+      "lng": 77.216,
+      "congestion": 0.85,
+      "trains": 150
+    },
+    {
+      "id": 50,
+      "name": "Hazrat Nizamuddin",
+      "lat": 28.583,
+      "lng": 77.251,
+      "congestion": 0.92,
+      "trains": 180
+    },
+    {
+      "id": 51,
+      "name": "Faridabad",
+      "lat": 28.4089,
+      "lng": 77.3178,
+      "congestion": 0.65,
+      "trains": 60
+    },
+    {
+      "id": 52,
+      "name": "Palwal",
+      "lat": 28.1478,
+      "lng": 77.3323,
+      "congestion": 0.48,
+      "trains": 38
+    },
+    {
+      "id": 53,
+      "name": "Kosikalan",
+      "lat": 27.79,
+      "lng": 77.49,
+      "congestion": 0.4,
+      "trains": 30
+    },
+    {
+      "id": 54,
+      "name": "Indore Jn BG",
+      "lat": 22.7196,
+      "lng": 75.8577,
+      "congestion": 0.8,
+      "trains": 82
+    },
+    {
+      "id": 55,
+      "name": "Ujjain Jn",
+      "lat": 23.1765,
+      "lng": 75.7885,
+      "congestion": 0.72,
+      "trains": 68
+    },
+    {
+      "id": 56,
+      "name": "Dewas",
+      "lat": 22.9676,
+      "lng": 76.0534,
+      "congestion": 0.5,
+      "trains": 40
+    },
+    {
+      "id": 57,
+      "name": "Mhow",
+      "lat": 22.5525,
+      "lng": 75.7616,
+      "congestion": 0.38,
+      "trains": 28
+    },
+    {
+      "id": 58,
+      "name": "Ratlam Jn",
+      "lat": 23.3315,
+      "lng": 75.0367,
+      "congestion": 0.75,
+      "trains": 72
+    },
+    {
+      "id": 59,
+      "name": "Nagda Jn",
+      "lat": 23.4551,
+      "lng": 75.4135,
+      "congestion": 0.55,
+      "trains": 44
+    },
+    {
+      "id": 60,
+      "name": "Kota Jn",
+      "lat": 25.18,
+      "lng": 75.8333,
+      "congestion": 0.78,
+      "trains": 80
+    },
+    {
+      "id": 61,
+      "name": "Sawai Madhopur",
+      "lat": 25.9956,
+      "lng": 76.3515,
+      "congestion": 0.52,
+      "trains": 40
+    },
+    {
+      "id": 62,
+      "name": "Gangapur City",
+      "lat": 26.47,
+      "lng": 76.71,
+      "congestion": 0.45,
+      "trains": 35
+    },
+    {
+      "id": 63,
+      "name": "Bharatpur Jn",
+      "lat": 27.2172,
+      "lng": 77.49,
+      "congestion": 0.6,
+      "trains": 50
+    },
+    {
+      "id": 64,
+      "name": "Bandikui Jn",
+      "lat": 27.05,
+      "lng": 76.57,
+      "congestion": 0.42,
+      "trains": 32
+    },
+    {
+      "id": 65,
+      "name": "Jaipur Jn",
+      "lat": 26.9124,
+      "lng": 75.7873,
+      "congestion": 0.82,
+      "trains": 92
+    },
+    {
+      "id": 66,
+      "name": "Ajmer Jn",
+      "lat": 26.4521,
+      "lng": 74.64,
+      "congestion": 0.7,
+      "trains": 65
+    },
+    {
+      "id": 67,
+      "name": "Phulera Jn",
+      "lat": 26.87,
+      "lng": 75.24,
+      "congestion": 0.55,
+      "trains": 44
+    },
+    {
+      "id": 68,
+      "name": "Ringus Jn",
+      "lat": 27.39,
+      "lng": 75.57,
+      "congestion": 0.4,
+      "trains": 30
+    },
+    {
+      "id": 69,
+      "name": "Sikar",
+      "lat": 27.6094,
+      "lng": 75.1399,
+      "congestion": 0.48,
+      "trains": 36
+    },
+    {
+      "id": 70,
+      "name": "Pune Jn",
+      "lat": 18.5285,
+      "lng": 73.8745,
+      "congestion": 0.82,
+      "trains": 95
+    },
+    {
+      "id": 71,
+      "name": "Daund Jn",
+      "lat": 18.46,
+      "lng": 74.58,
+      "congestion": 0.6,
+      "trains": 50
+    },
+    {
+      "id": 72,
+      "name": "Solapur",
+      "lat": 17.6805,
+      "lng": 75.9064,
+      "congestion": 0.62,
+      "trains": 55
+    },
+    {
+      "id": 73,
+      "name": "Wadi Jn",
+      "lat": 17.05,
+      "lng": 76.97,
+      "congestion": 0.55,
+      "trains": 44
+    },
+    {
+      "id": 74,
+      "name": "Gulbarga",
+      "lat": 17.3297,
+      "lng": 76.8343,
+      "congestion": 0.6,
+      "trains": 50
+    },
+    {
+      "id": 75,
+      "name": "Raichur",
+      "lat": 16.212,
+      "lng": 77.3439,
+      "congestion": 0.52,
+      "trains": 42
+    },
+    {
+      "id": 76,
+      "name": "Secunderabad Jn",
+      "lat": 17.4344,
+      "lng": 78.5013,
+      "congestion": 0.88,
+      "trains": 110
+    },
+    {
+      "id": 77,
+      "name": "Kazipet Jn",
+      "lat": 17.9745,
+      "lng": 79.4925,
+      "congestion": 0.65,
+      "trains": 58
+    },
+    {
+      "id": 78,
+      "name": "Warangal",
+      "lat": 17.9784,
+      "lng": 79.6,
+      "congestion": 0.6,
+      "trains": 50
+    },
+    {
+      "id": 79,
+      "name": "Vijayawada Jn",
+      "lat": 16.5193,
+      "lng": 80.6305,
+      "congestion": 0.85,
+      "trains": 100
+    },
+    {
+      "id": 80,
+      "name": "Howrah Jn",
+      "lat": 22.5654,
+      "lng": 88.3416,
+      "congestion": 0.98,
+      "trains": 350
+    },
+    {
+      "id": 81,
+      "name": "New Delhi",
+      "lat": 28.6323,
+      "lng": 77.22,
+      "congestion": 0.99,
+      "trains": 350
+    },
+    {
+      "id": 82,
+      "name": "Mumbai CST",
+      "lat": 18.9402,
+      "lng": 72.8353,
+      "congestion": 0.97,
+      "trains": 320
+    },
+    {
+      "id": 83,
+      "name": "Chennai Central",
+      "lat": 13.0827,
+      "lng": 80.2707,
+      "congestion": 0.9,
+      "trains": 200
+    },
+    {
+      "id": 84,
+      "name": "Bengaluru City",
+      "lat": 12.978,
+      "lng": 77.5726,
+      "congestion": 0.88,
+      "trains": 180
+    },
+    {
+      "id": 85,
+      "name": "Hyderabad Deccan",
+      "lat": 17.385,
+      "lng": 78.4867,
+      "congestion": 0.85,
+      "trains": 160
+    },
+    {
+      "id": 86,
+      "name": "Ahmedabad Jn",
+      "lat": 23.0258,
+      "lng": 72.5873,
+      "congestion": 0.84,
+      "trains": 150
+    },
+    {
+      "id": 87,
+      "name": "Surat",
+      "lat": 21.1702,
+      "lng": 72.8311,
+      "congestion": 0.75,
+      "trains": 90
+    },
+    {
+      "id": 88,
+      "name": "Vadodara Jn",
+      "lat": 22.3072,
+      "lng": 73.1812,
+      "congestion": 0.78,
+      "trains": 95
+    },
+    {
+      "id": 89,
+      "name": "Anand Jn",
+      "lat": 22.5645,
+      "lng": 72.952,
+      "congestion": 0.55,
+      "trains": 44
+    },
+    {
+      "id": 90,
+      "name": "Patna Jn",
+      "lat": 25.5941,
+      "lng": 85.1376,
+      "congestion": 0.86,
+      "trains": 140
+    },
+    {
+      "id": 91,
+      "name": "Danapur",
+      "lat": 25.61,
+      "lng": 85.04,
+      "congestion": 0.62,
+      "trains": 52
+    },
+    {
+      "id": 92,
+      "name": "Mokama Jn",
+      "lat": 25.39,
+      "lng": 85.92,
+      "congestion": 0.55,
+      "trains": 44
+    },
+    {
+      "id": 93,
+      "name": "Kiul Jn",
+      "lat": 25.09,
+      "lng": 86.04,
+      "congestion": 0.6,
+      "trains": 50
+    },
+    {
+      "id": 94,
+      "name": "Bhagalpur",
+      "lat": 25.2425,
+      "lng": 86.9842,
+      "congestion": 0.65,
+      "trains": 58
+    },
+    {
+      "id": 95,
+      "name": "Malda Town",
+      "lat": 25.0108,
+      "lng": 88.1437,
+      "congestion": 0.68,
+      "trains": 60
+    },
+    {
+      "id": 96,
+      "name": "Guwahati",
+      "lat": 26.1445,
+      "lng": 91.7362,
+      "congestion": 0.75,
+      "trains": 75
+    },
+    {
+      "id": 97,
+      "name": "New Jalpaiguri",
+      "lat": 26.7051,
+      "lng": 88.1636,
+      "congestion": 0.72,
+      "trains": 70
+    },
+    {
+      "id": 98,
+      "name": "Bhubaneswar",
+      "lat": 20.2961,
+      "lng": 85.8245,
+      "congestion": 0.75,
+      "trains": 78
+    },
+    {
+      "id": 99,
+      "name": "Visakhapatnam",
+      "lat": 17.6868,
+      "lng": 83.2185,
+      "congestion": 0.8,
+      "trains": 88
+    }
+  ]
+}
