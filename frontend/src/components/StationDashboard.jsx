@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 
 const STATION_TRAINS = {
@@ -79,11 +79,11 @@ const getColor = (status) => {
 
 const StationDashboard = ({ station, onBack }) => {
   const svgRef = useRef(null);
-  const trains = getStationTrains(station.id);
-  const conflicts = trains.filter(t => t.status !== 'on_time');
+  const [localTrains, setLocalTrains] = useState(getStationTrains(station.id));
+  const localConflicts = localTrains.filter(t => t.status !== 'on_time');
 
   useEffect(() => {
-    if (!svgRef.current || !trains.length) return;
+    if (!svgRef.current || !localTrains.length) return;
     const width = 380;
     const height = 160;
     const margin = { top: 20, right: 10, bottom: 30, left: 45 };
@@ -93,16 +93,16 @@ const StationDashboard = ({ station, onBack }) => {
       .attr('width', width).attr('height', height);
 
     const x = d3.scaleBand()
-      .domain(trains.map(d => d.id))
+      .domain(localTrains.map(d => d.id))
       .range([margin.left, width - margin.right])
       .padding(0.3);
 
     const y = d3.scaleLinear()
-      .domain([0, d3.max(trains, d => d.delay) + 5])
+      .domain([0, d3.max(localTrains, d => d.delay) + 5])
       .range([height - margin.bottom, margin.top]);
 
     svg.selectAll('rect')
-      .data(trains).join('rect')
+      .data(localTrains).join('rect')
       .attr('x', d => x(d.id))
       .attr('y', d => y(d.delay))
       .attr('width', x.bandwidth())
@@ -123,7 +123,7 @@ const StationDashboard = ({ station, onBack }) => {
       .style('fill', '#aaa');
 
     svg.selectAll('.domain, .tick line').style('stroke', '#444');
-  }, []);
+  }, [localTrains]);
 
   return (
     <div style={{
@@ -163,6 +163,19 @@ const StationDashboard = ({ station, onBack }) => {
         }}>
           {Math.round(station.congestion * 100)}% CONGESTED
         </span>
+        <button onClick={() => {
+          setLocalTrains(prev => prev.map(t => ({
+            ...t, status: 'on_time', delay: 0, speed: 60
+          })));
+        }} style={{
+          background: '#00ff88', color: '#000',
+          border: 'none', borderRadius: '6px',
+          padding: '6px 16px', cursor: 'pointer',
+          fontWeight: 'bold', fontFamily: 'monospace',
+          fontSize: '13px', marginLeft: 'auto'
+        }}>
+          ⚡ OPTIMIZE STATION
+        </button>
       </div>
 
       {/* STAT CARDS */}
@@ -172,9 +185,9 @@ const StationDashboard = ({ station, onBack }) => {
       }}>
         {[
           { label: 'TOTAL TRAINS', val: station.trains, color: '#fff' },
-          { label: 'DELAYED', val: trains.filter(t => t.status === 'delayed').length, color: '#ff4444' },
-          { label: 'AT RISK', val: trains.filter(t => t.status === 'at_risk').length, color: '#ffaa00' },
-          { label: 'ON TIME', val: trains.filter(t => t.status === 'on_time').length, color: '#00ff88' },
+          { label: 'DELAYED', val: localTrains.filter(t => t.status === 'delayed').length, color: '#ff4444' },
+          { label: 'AT RISK', val: localTrains.filter(t => t.status === 'at_risk').length, color: '#ffaa00' },
+          { label: 'ON TIME', val: localTrains.filter(t => t.status === 'on_time').length, color: '#00ff88' },
         ].map(s => (
           <div key={s.label} style={{
             flex: 1, background: '#111', border: '1px solid #222',
@@ -209,12 +222,12 @@ const StationDashboard = ({ station, onBack }) => {
           padding: '0 15px', maxHeight: '60vh', overflowY: 'auto'
         }}>
           <div style={{ fontSize: '11px', color: '#ff4444', letterSpacing: '2px', marginBottom: '10px' }}>
-            CONFLICT ALERTS ({conflicts.length})
+            CONFLICT ALERTS ({localConflicts.length})
           </div>
 
-          {conflicts.length === 0 ? (
+          {localConflicts.length === 0 ? (
             <div style={{ color: '#00ff88', fontSize: '13px' }}>✅ All trains running smoothly!</div>
-          ) : conflicts.map(train => (
+          ) : localConflicts.map(train => (
             <div key={train.id} style={{
               background: '#1a1a1a',
               border: `1px solid ${getColor(train.status)}`,
@@ -226,12 +239,17 @@ const StationDashboard = ({ station, onBack }) => {
                 Delay: {train.delay} mins | Speed: {train.speed} km/h
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '8px' }}>
-                <button onClick={() => alert(`✅ AI approved for ${train.id}`)}
-                  style={{ background: '#00ff88', color: '#000', border: 'none', borderRadius: '4px', padding: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', fontFamily: 'monospace' }}>
+                <button onClick={() => setLocalTrains(prev => prev.map(t =>
+                  t.id === train.id ? { ...t, status: 'on_time', delay: 0, speed: 60 } : t
+                ))} style={{ background: '#00ff88', color: '#000', border: 'none', borderRadius: '4px', padding: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', fontFamily: 'monospace' }}>
                   ✅ APPROVE AI
                 </button>
-                <button onClick={() => alert(`✋ Override set for ${train.id}`)}
-                  style={{ background: '#ffaa00', color: '#000', border: 'none', borderRadius: '4px', padding: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', fontFamily: 'monospace' }}>
+                <button onClick={() => {
+                  setLocalTrains(prev => prev.map(t =>
+                    t.id === train.id ? { ...t, status: 'at_risk', delay: 2 } : t
+                  ));
+                  alert(`✋ Override set for ${train.id}`);
+                }} style={{ background: '#ffaa00', color: '#000', border: 'none', borderRadius: '4px', padding: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', fontFamily: 'monospace' }}>
                   ✋ OVERRIDE MANUAL
                 </button>
                 <button onClick={() => alert(`📡 MRDC sent for ${train.id}`)}
