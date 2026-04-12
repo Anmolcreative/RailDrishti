@@ -15,14 +15,16 @@ const Logo = () => {
       />
 
       <h1 style={{
-        margin: 0,
-        fontSize: '22px',
-        fontWeight: '900',
-        color: '#ffffff',
-        letterSpacing: '1px'
-      }}>
-        RailDrishti
-      </h1>
+  margin: 0,
+  fontSize: '24px',
+  fontWeight: '900',
+  color: '#ffffff',
+  fontFamily: 'Impact, "Arial Narrow", sans-serif',
+  letterSpacing: '2px',
+  marginRight: '20px'
+}}>
+  RAILDRISHTI
+</h1>
 
     </div>
   );

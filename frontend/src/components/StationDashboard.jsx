@@ -1,3 +1,4 @@
+import Logo from './Logo';
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 
@@ -153,6 +154,7 @@ const StationDashboard = ({ station, onBack }) => {
           borderRadius: '6px', cursor: 'pointer',
           fontFamily: 'monospace', fontSize: '13px'
         }}>← Back</button>
+        <Logo />
         <h2 style={{ margin: 0, fontSize: '18px' }}>
           🚉 {station.name}
         </h2>

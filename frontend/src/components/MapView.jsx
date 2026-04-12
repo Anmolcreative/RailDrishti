@@ -60,23 +60,44 @@ const MapView = ({ trains = [], onStationClick }) => {
       stationMarkersRef.current.push(marker);
     });
 
-    // Global function for popup button click
     window.selectStation = (id) => {
       const station = STATIONS.find(s => s.id === id);
       if (onStationClick) onStationClick(station);
     };
   }, []);
 
-  // Update train markers
+  // Update train markers with custom icon
   useEffect(() => {
     if (!mapRef.current) return;
     trains.forEach(train => {
       if (markersRef.current[train.id]) {
         markersRef.current[train.id].remove();
       }
-      markersRef.current[train.id] = L.circleMarker(
+
+      const color = getColor(train.status);
+
+     const trainIcon = L.divIcon({
+  html: `<div style="
+    width: 32px;
+    height: 32px;
+    filter: hue-rotate(${
+      train.status === 'on_time' ? '120deg' : 
+      train.status === 'delayed' ? '0deg' : 
+      '40deg'
+    }) saturate(2) brightness(1.2);
+  ">
+    <img src="/train-icon.png" 
+      style="width:32px;height:32px;object-fit:contain;"
+    />
+  </div>`,
+  className: '',
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+});
+
+      markersRef.current[train.id] = L.marker(
         [train.lat, train.lng],
-        { color: getColor(train.status), fillColor: getColor(train.status), radius: 10, fillOpacity: 0.9, weight: 2 }
+        { icon: trainIcon }
       )
       .addTo(mapRef.current)
       .bindPopup(`
