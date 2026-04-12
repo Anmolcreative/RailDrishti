@@ -109,8 +109,17 @@ useEffect(() => {
         <ConflictSidebar
           trains={trains}
           selectedStation={selectedStation}
-          onApprove={(id) => alert(`✅ AI recommendation approved for ${id}`)}
-          onOverride={(id) => alert(`✋ Manual override set for ${id}`)}
+          onApprove={(id) => {
+            setTrains(prev => prev.map(t => 
+            t.id === id ? { ...t, status: 'on_time', delay: 0, speed: 60 } : t
+       ));
+     }}
+          onOverride={(id) => {
+  setTrains(prev => prev.map(t =>
+    t.id === id ? { ...t, status: 'at_risk', delay: 2 } : t
+  ));
+  alert(`✋ Manual override set for ${id} — monitoring closely`);
+}}
           onMRDC={(id) => alert(`📡 Message sent to loco pilot of ${id} via MRDC!`)}
         />
 
