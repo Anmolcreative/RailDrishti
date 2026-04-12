@@ -18,6 +18,14 @@ function App() {
   const [trains, setTrains] = useState(DUMMY_TRAINS);
   const [selectedStation, setSelectedStation] = useState(null);
   const [showStationDashboard, setShowStationDashboard] = useState(false);
+  const [time, setTime] = useState(new Date().toLocaleTimeString());
+
+useEffect(() => {
+  const timer = setInterval(() => {
+    setTime(new Date().toLocaleTimeString());
+  }, 1000);
+  return () => clearInterval(timer);
+}, []);
 
   // Simulate movement
   useEffect(() => {
@@ -65,6 +73,9 @@ function App() {
   setShowStationDashboard(true);
 }} />
         <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+          <span style={{ color: '#aaa', fontSize: '13px', letterSpacing: '1px' }}>
+          🕐 {time}
+          </span>
           <span>🟢 On Time: {onTime}</span>
           <span>🔴 Delayed: {delayed}</span>
           <span>🟡 At Risk: {atRisk}</span>
