@@ -10,16 +10,16 @@ app.include_router(router)
 def health():
     return {"status": "RailDrishti backend is running smoothly!"}
 
-@app.websocket("/ws/live")              # ← add everything below
+@app.websocket("/ws/live")              
 async def websocket_live(websocket: WebSocket):
     await websocket.accept()
     try:
         while True:
             data = { 
                 "trains": [
-                {"id": "TN001", "lat": 19.0760, "lng": 72.8777, "speed": 60, "delay": 5, "status": "on time"},
-                {"id": "TN002", "lat": 28.6139, "lng": 77.2090, "speed": 80, "delay": 0 , "status": "on time"},
-                {"id": "TN003", "lat": 13.0827, "lng": 80.2707, "speed": 45, "delay": 12, "status": "delayed"}
+                {"id": "TN001", "lat": 19.0760, "lng": 72.8777, "speed": 60, "delay": 5, "status": "on time", "corridor id": "BPL-ET"},
+                {"id": "TN002", "lat": 28.6139, "lng": 77.2090, "speed": 80, "delay": 0 , "status": "on time", "corridor id": "NDLS-MGS"},
+                {"id": "TN003", "lat": 13.0827, "lng": 80.2707, "speed": 45, "delay": 12, "status": "delayed", "corridor id": "HWH-DHN"}
                 ]
             }
             await websocket.send_json(data)
