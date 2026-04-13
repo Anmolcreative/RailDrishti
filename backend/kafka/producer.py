@@ -18,7 +18,7 @@ def send_train_status(train_data: dict):
     producer.flush()
     print(f"Sent to Kafka: {train_data}")
 
-# Test
+
 if __name__ == "__main__":
     send_train_status({
         "train_id": "TN001",

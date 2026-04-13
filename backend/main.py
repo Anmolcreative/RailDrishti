@@ -15,12 +15,14 @@ async def websocket_live(websocket: WebSocket):
     await websocket.accept()
     try:
         while True:
-            data = [
-                {"train_id": "TN001", "lat": 19.0760, "lng": 72.8777, "speed": 60, "delay": 5},
-                {"train_id": "TN002", "lat": 28.6139, "lng": 77.2090, "speed": 80, "delay": 0},
-                {"train_id": "TN003", "lat": 13.0827, "lng": 80.2707, "speed": 45, "delay": 12}
-            ]
-            await websocket.send_text(json.dumps(data))
+            data = { 
+                "trains": [
+                {"id": "TN001", "lat": 19.0760, "lng": 72.8777, "speed": 60, "delay": 5, "status": "on time"},
+                {"id": "TN002", "lat": 28.6139, "lng": 77.2090, "speed": 80, "delay": 0 , "status": "on time"},
+                {"id": "TN003", "lat": 13.0827, "lng": 80.2707, "speed": 45, "delay": 12, "status": "delayed"}
+                ]
+            }
+            await websocket.send_json(data)
             await asyncio.sleep(1)
     except Exception:
         await websocket.close()
