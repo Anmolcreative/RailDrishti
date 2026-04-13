@@ -1,0 +1,967 @@
+{
+  "live_corridors": {
+    "BPL_ET": {
+      "corridor_id": "BPL-ET",
+      "name": "Bhopal Junction to Itarsi Junction",
+      "feed_interval_sec": 2,
+      "stations": [
+        {
+          "code": "BPL",
+          "name": "BHOPAL JN",
+          "lat": 23.266884,
+          "lng": 77.413143,
+          "congestion_score": 0.85,
+          "total_trains_daily": 80,
+          "platforms": 5,
+          "priority_level": 3,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "BNI",
+          "name": "BUDNI",
+          "lat": 22.787114,
+          "lng": 77.681283,
+          "congestion_score": 0.45,
+          "total_trains_daily": 38,
+          "platforms": 2,
+          "priority_level": 1,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "PRKD",
+          "name": "POWERKHEDA",
+          "lat": 22.673479,
+          "lng": 77.747363,
+          "congestion_score": 0.7,
+          "total_trains_daily": 52,
+          "platforms": 2,
+          "priority_level": 1,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "HBD",
+          "name": "HOSHANGABAD",
+          "lat": 22.75274,
+          "lng": 77.715594,
+          "congestion_score": 0.65,
+          "total_trains_daily": 55,
+          "platforms": 3,
+          "priority_level": 1,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "ET",
+          "name": "ITARSI JN",
+          "lat": 22.608258,
+          "lng": 77.767128,
+          "congestion_score": 0.9,
+          "total_trains_daily": 110,
+          "platforms": 7,
+          "priority_level": 3,
+          "data_source": "live_feed"
+        }
+      ]
+    },
+    "NDLS_MGS": {
+      "corridor_id": "NDLS-MGS",
+      "name": "New Delhi to Mughal Sarai Junction",
+      "feed_interval_sec": 2,
+      "stations": [
+        {
+          "code": "NDLS",
+          "name": "NEW DELHI",
+          "lat": 28.642314,
+          "lng": 77.220004,
+          "congestion_score": 0.99,
+          "total_trains_daily": 350,
+          "platforms": 16,
+          "priority_level": 3,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "HNZM",
+          "name": "HAZRAT NIZAMUDDIN",
+          "lat": 28.58701,
+          "lng": 77.253929,
+          "congestion_score": 0.92,
+          "total_trains_daily": 180,
+          "platforms": 8,
+          "priority_level": 3,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "FDB",
+          "name": "FARIDABAD",
+          "lat": 28.411473,
+          "lng": 77.307348,
+          "congestion_score": 0.65,
+          "total_trains_daily": 60,
+          "platforms": 4,
+          "priority_level": 1,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "PWL",
+          "name": "PALWAL",
+          "lat": 28.151841,
+          "lng": 77.342232,
+          "congestion_score": 0.48,
+          "total_trains_daily": 38,
+          "platforms": 3,
+          "priority_level": 1,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "MTJ",
+          "name": "MATHURA JN",
+          "lat": 27.480145,
+          "lng": 77.673117,
+          "congestion_score": 0.75,
+          "total_trains_daily": 78,
+          "platforms": 5,
+          "priority_level": 2,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "AGC",
+          "name": "AGRA CANTT",
+          "lat": 27.157992,
+          "lng": 77.990153,
+          "congestion_score": 0.8,
+          "total_trains_daily": 90,
+          "platforms": 6,
+          "priority_level": 3,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "TDL",
+          "name": "TUNDLA JN",
+          "lat": 27.207747,
+          "lng": 78.233285,
+          "congestion_score": 0.6,
+          "total_trains_daily": 52,
+          "platforms": 4,
+          "priority_level": 2,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "ETW",
+          "name": "ETAWAH",
+          "lat": 26.78597,
+          "lng": 79.021502,
+          "congestion_score": 0.55,
+          "total_trains_daily": 44,
+          "platforms": 3,
+          "priority_level": 1,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "CNB",
+          "name": "KANPUR CENTRAL",
+          "lat": 26.45424,
+          "lng": 80.350966,
+          "congestion_score": 0.95,
+          "total_trains_daily": 280,
+          "platforms": 10,
+          "priority_level": 3,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "ALD",
+          "name": "ALLAHABAD JN",
+          "lat": 25.446241,
+          "lng": 81.828816,
+          "congestion_score": 0.88,
+          "total_trains_daily": 120,
+          "platforms": 8,
+          "priority_level": 3,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "MZP",
+          "name": "MIRZAPUR",
+          "lat": 25.13435,
+          "lng": 82.569869,
+          "congestion_score": 0.52,
+          "total_trains_daily": 42,
+          "platforms": 3,
+          "priority_level": 1,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "BSB",
+          "name": "VARANASI JN",
+          "lat": 25.327281,
+          "lng": 82.986468,
+          "congestion_score": 0.87,
+          "total_trains_daily": 115,
+          "platforms": 9,
+          "priority_level": 3,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "MGS",
+          "name": "MUGHAL SARAI JN",
+          "lat": 25.278149,
+          "lng": 83.11925,
+          "congestion_score": 0.8,
+          "total_trains_daily": 90,
+          "platforms": 8,
+          "priority_level": 3,
+          "data_source": "live_feed"
+        }
+      ]
+    },
+    "HWH_DHN": {
+      "corridor_id": "HWH-DHN",
+      "name": "Howrah Junction to Dhanbad Junction",
+      "feed_interval_sec": 2,
+      "stations": [
+        {
+          "code": "HWH",
+          "name": "HOWRAH JN",
+          "lat": 22.584078,
+          "lng": 88.340999,
+          "congestion_score": 0.98,
+          "total_trains_daily": 350,
+          "platforms": 23,
+          "priority_level": 3,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "BWN",
+          "name": "BARDDHAMAN JN",
+          "lat": 23.249718,
+          "lng": 87.870281,
+          "congestion_score": 0.65,
+          "total_trains_daily": 60,
+          "platforms": 5,
+          "priority_level": 2,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "ASN",
+          "name": "ASANSOL JN",
+          "lat": 23.691441,
+          "lng": 86.975152,
+          "congestion_score": 0.72,
+          "total_trains_daily": 70,
+          "platforms": 6,
+          "priority_level": 2,
+          "data_source": "live_feed"
+        },
+        {
+          "code": "DHN",
+          "name": "DHANBAD JN",
+          "lat": 23.790966,
+          "lng": 86.428956,
+          "congestion_score": 0.75,
+          "total_trains_daily": 78,
+          "platforms": 6,
+          "priority_level": 2,
+          "data_source": "live_feed"
+        }
+      ]
+    }
+  },
+  "simulated_stations": {
+    "stations": [
+      {
+        "code": "BPL",
+        "name": "BHOPAL JN",
+        "lat": 23.266884,
+        "lng": 77.413143,
+        "congestion_score": 0.85,
+        "platforms": 5
+      },
+      {
+        "code": "BNI",
+        "name": "BUDNI",
+        "lat": 22.787114,
+        "lng": 77.681283,
+        "congestion_score": 0.45,
+        "platforms": 2
+      },
+      {
+        "code": "PRKD",
+        "name": "POWERKHEDA",
+        "lat": 22.673479,
+        "lng": 77.747363,
+        "congestion_score": 0.7,
+        "platforms": 2
+      },
+      {
+        "code": "HBD",
+        "name": "HOSHANGABAD",
+        "lat": 22.75274,
+        "lng": 77.715594,
+        "congestion_score": 0.65,
+        "platforms": 3
+      },
+      {
+        "code": "ET",
+        "name": "ITARSI JN",
+        "lat": 22.608258,
+        "lng": 77.767128,
+        "congestion_score": 0.9,
+        "platforms": 7
+      },
+      {
+        "code": "BINA",
+        "name": "BINA JN",
+        "lat": 24.170974,
+        "lng": 78.1832,
+        "congestion_score": 0.75,
+        "platforms": 4
+      },
+      {
+        "code": "SEH",
+        "name": "SEHORE",
+        "lat": 23.215095,
+        "lng": 77.077882,
+        "congestion_score": 0.42,
+        "platforms": 2
+      },
+      {
+        "code": "NU",
+        "name": "NARSINGHPUR",
+        "lat": 22.943112,
+        "lng": 79.214385,
+        "congestion_score": 0.48,
+        "platforms": 2
+      },
+      {
+        "code": "NGP",
+        "name": "NAGPUR",
+        "lat": 21.153567,
+        "lng": 79.089004,
+        "congestion_score": 0.82,
+        "platforms": 6
+      },
+      {
+        "code": "WR",
+        "name": "WARDHA JN",
+        "lat": 20.732777,
+        "lng": 78.594157,
+        "congestion_score": 0.6,
+        "platforms": 3
+      },
+      {
+        "code": "SEGM",
+        "name": "SEVAGRAM",
+        "lat": 20.739076,
+        "lng": 78.619225,
+        "congestion_score": 0.3,
+        "platforms": 2
+      },
+      {
+        "code": "G",
+        "name": "GONDIA JN",
+        "lat": 21.462435,
+        "lng": 80.190842,
+        "congestion_score": 0.55,
+        "platforms": 3
+      },
+      {
+        "code": "BPQ",
+        "name": "BALHARSHAH",
+        "lat": 19.849017,
+        "lng": 79.348586,
+        "congestion_score": 0.68,
+        "platforms": 4
+      },
+      {
+        "code": "JBP",
+        "name": "JABALPUR",
+        "lat": 23.164636,
+        "lng": 79.950919,
+        "congestion_score": 0.78,
+        "platforms": 5
+      },
+      {
+        "code": "KTE",
+        "name": "KATNI",
+        "lat": 23.833385,
+        "lng": 80.400543,
+        "congestion_score": 0.65,
+        "platforms": 5
+      },
+      {
+        "code": "STA",
+        "name": "SATNA",
+        "lat": 24.568619,
+        "lng": 80.827717,
+        "congestion_score": 0.58,
+        "platforms": 3
+      },
+      {
+        "code": "MKP",
+        "name": "MANIKPUR JN",
+        "lat": 25.063492,
+        "lng": 81.093657,
+        "congestion_score": 0.5,
+        "platforms": 3
+      },
+      {
+        "code": "ALD",
+        "name": "ALLAHABAD JN",
+        "lat": 25.446241,
+        "lng": 81.828816,
+        "congestion_score": 0.88,
+        "platforms": 8
+      },
+      {
+        "code": "MZP",
+        "name": "MIRZAPUR",
+        "lat": 25.13435,
+        "lng": 82.569869,
+        "congestion_score": 0.52,
+        "platforms": 3
+      },
+      {
+        "code": "BSB",
+        "name": "VARANASI JN",
+        "lat": 25.327281,
+        "lng": 82.986468,
+        "congestion_score": 0.87,
+        "platforms": 9
+      },
+      {
+        "code": "MGS",
+        "name": "MUGHAL SARAI JN",
+        "lat": 25.278149,
+        "lng": 83.11925,
+        "congestion_score": 0.8,
+        "platforms": 8
+      },
+      {
+        "code": "GAYA",
+        "name": "GAYA JN",
+        "lat": 24.803978,
+        "lng": 84.999294,
+        "congestion_score": 0.7,
+        "platforms": 5
+      },
+      {
+        "code": "DHN",
+        "name": "DHANBAD JN",
+        "lat": 23.790966,
+        "lng": 86.428956,
+        "congestion_score": 0.75,
+        "platforms": 6
+      },
+      {
+        "code": "ASN",
+        "name": "ASANSOL JN",
+        "lat": 23.691441,
+        "lng": 86.975152,
+        "congestion_score": 0.72,
+        "platforms": 6
+      },
+      {
+        "code": "DGR",
+        "name": "DURGAPUR",
+        "lat": 23.495046,
+        "lng": 87.297902,
+        "congestion_score": 0.6,
+        "platforms": 3
+      },
+      {
+        "code": "BWN",
+        "name": "BARDDHAMAN JN",
+        "lat": 23.249718,
+        "lng": 87.870281,
+        "congestion_score": 0.65,
+        "platforms": 5
+      },
+      {
+        "code": "KGP",
+        "name": "KHARAGPUR JN",
+        "lat": 22.341432,
+        "lng": 87.328456,
+        "congestion_score": 0.78,
+        "platforms": 5
+      },
+      {
+        "code": "TATA",
+        "name": "TATANAGAR JN",
+        "lat": 22.768954,
+        "lng": 86.20056,
+        "congestion_score": 0.7,
+        "platforms": 4
+      },
+      {
+        "code": "R",
+        "name": "RAIPUR JN",
+        "lat": 21.256462,
+        "lng": 81.629328,
+        "congestion_score": 0.76,
+        "platforms": 5
+      },
+      {
+        "code": "BSP",
+        "name": "BILASPUR JN",
+        "lat": 22.057473,
+        "lng": 82.167585,
+        "congestion_score": 0.72,
+        "platforms": 4
+      },
+      {
+        "code": "DURG",
+        "name": "DURG",
+        "lat": 21.200327,
+        "lng": 81.291837,
+        "congestion_score": 0.6,
+        "platforms": 3
+      },
+      {
+        "code": "ITR",
+        "name": "ITWARI",
+        "lat": 21.157819,
+        "lng": 79.119237,
+        "congestion_score": 0.55,
+        "platforms": 3
+      },
+      {
+        "code": "JHS",
+        "name": "JHANSI JN",
+        "lat": 25.443585,
+        "lng": 78.552985,
+        "congestion_score": 0.88,
+        "platforms": 5
+      },
+      {
+        "code": "GWL",
+        "name": "GWALIOR JN",
+        "lat": 26.216483,
+        "lng": 78.182292,
+        "congestion_score": 0.82,
+        "platforms": 5
+      },
+      {
+        "code": "CNB",
+        "name": "KANPUR CENTRAL",
+        "lat": 26.45424,
+        "lng": 80.350966,
+        "congestion_score": 0.95,
+        "platforms": 10
+      },
+      {
+        "code": "LKO",
+        "name": "LUCKNOW",
+        "lat": 26.830675,
+        "lng": 80.925291,
+        "congestion_score": 0.9,
+        "platforms": 9
+      },
+      {
+        "code": "AGC",
+        "name": "AGRA CANTT",
+        "lat": 27.157992,
+        "lng": 77.990153,
+        "congestion_score": 0.8,
+        "platforms": 6
+      },
+      {
+        "code": "MTJ",
+        "name": "MATHURA JN",
+        "lat": 27.480145,
+        "lng": 77.673117,
+        "congestion_score": 0.75,
+        "platforms": 5
+      },
+      {
+        "code": "ETW",
+        "name": "ETAWAH",
+        "lat": 26.78597,
+        "lng": 79.021502,
+        "congestion_score": 0.55,
+        "platforms": 3
+      },
+      {
+        "code": "TDL",
+        "name": "TUNDLA JN",
+        "lat": 27.207747,
+        "lng": 78.233285,
+        "congestion_score": 0.6,
+        "platforms": 4
+      },
+      {
+        "code": "FZD",
+        "name": "FIROZABAD",
+        "lat": 27.147415,
+        "lng": 78.386691,
+        "congestion_score": 0.5,
+        "platforms": 3
+      },
+      {
+        "code": "HNZM",
+        "name": "HAZRAT NIZAMUDDIN",
+        "lat": 28.58701,
+        "lng": 77.253929,
+        "congestion_score": 0.92,
+        "platforms": 8
+      },
+      {
+        "code": "FDB",
+        "name": "FARIDABAD",
+        "lat": 28.411473,
+        "lng": 77.307348,
+        "congestion_score": 0.65,
+        "platforms": 4
+      },
+      {
+        "code": "PWL",
+        "name": "PALWAL",
+        "lat": 28.151841,
+        "lng": 77.342232,
+        "congestion_score": 0.48,
+        "platforms": 3
+      },
+      {
+        "code": "INDB",
+        "name": "INDORE JN BG",
+        "lat": 22.71757,
+        "lng": 75.868429,
+        "congestion_score": 0.8,
+        "platforms": 4
+      },
+      {
+        "code": "UJN",
+        "name": "UJJAIN JN",
+        "lat": 23.178154,
+        "lng": 75.781403,
+        "congestion_score": 0.72,
+        "platforms": 4
+      },
+      {
+        "code": "DWX",
+        "name": "DEWAS",
+        "lat": 22.977556,
+        "lng": 76.051191,
+        "congestion_score": 0.5,
+        "platforms": 2
+      },
+      {
+        "code": "RTM",
+        "name": "RATLAM JN",
+        "lat": 23.34038,
+        "lng": 75.050826,
+        "congestion_score": 0.75,
+        "platforms": 4
+      },
+      {
+        "code": "NAD",
+        "name": "NAGDA JN",
+        "lat": 23.45592,
+        "lng": 75.412491,
+        "congestion_score": 0.55,
+        "platforms": 3
+      },
+      {
+        "code": "KOTA",
+        "name": "KOTA JN",
+        "lat": 25.223553,
+        "lng": 75.8805,
+        "congestion_score": 0.78,
+        "platforms": 5
+      },
+      {
+        "code": "SWM",
+        "name": "SAWAI MADHOPUR",
+        "lat": 26.018279,
+        "lng": 76.35622,
+        "congestion_score": 0.52,
+        "platforms": 2
+      },
+      {
+        "code": "BTE",
+        "name": "BHARATPUR JN",
+        "lat": 27.237107,
+        "lng": 77.488613,
+        "congestion_score": 0.6,
+        "platforms": 3
+      },
+      {
+        "code": "JP",
+        "name": "JAIPUR",
+        "lat": 26.920203,
+        "lng": 75.786923,
+        "congestion_score": 0.82,
+        "platforms": 5
+      },
+      {
+        "code": "AII",
+        "name": "AJMER JN",
+        "lat": 26.456612,
+        "lng": 74.637464,
+        "congestion_score": 0.7,
+        "platforms": 4
+      },
+      {
+        "code": "PUNE",
+        "name": "PUNE JN",
+        "lat": 18.529378,
+        "lng": 73.873086,
+        "congestion_score": 0.82,
+        "platforms": 6
+      },
+      {
+        "code": "DD",
+        "name": "DAUND JN",
+        "lat": 18.463547,
+        "lng": 74.578622,
+        "congestion_score": 0.6,
+        "platforms": 3
+      },
+      {
+        "code": "SUR",
+        "name": "SOLAPUR JN",
+        "lat": 17.664496,
+        "lng": 75.893401,
+        "congestion_score": 0.62,
+        "platforms": 4
+      },
+      {
+        "code": "WADI",
+        "name": "WADI",
+        "lat": 17.054312,
+        "lng": 76.99155,
+        "congestion_score": 0.55,
+        "platforms": 3
+      },
+      {
+        "code": "GR",
+        "name": "GULBARGA",
+        "lat": 17.314372,
+        "lng": 76.824438,
+        "congestion_score": 0.6,
+        "platforms": 4
+      },
+      {
+        "code": "RC",
+        "name": "RAICHUR",
+        "lat": 16.192441,
+        "lng": 77.339165,
+        "congestion_score": 0.52,
+        "platforms": 3
+      },
+      {
+        "code": "SC",
+        "name": "SECUNDERABAD JN",
+        "lat": 17.433147,
+        "lng": 78.501481,
+        "congestion_score": 0.88,
+        "platforms": 7
+      },
+      {
+        "code": "KZJ",
+        "name": "KAZIPET JN",
+        "lat": 17.974211,
+        "lng": 79.511025,
+        "congestion_score": 0.65,
+        "platforms": 4
+      },
+      {
+        "code": "WL",
+        "name": "WARANGAL",
+        "lat": 17.972477,
+        "lng": 79.604929,
+        "congestion_score": 0.6,
+        "platforms": 3
+      },
+      {
+        "code": "BZA",
+        "name": "VIJAYAWADA JN",
+        "lat": 16.518262,
+        "lng": 80.618648,
+        "congestion_score": 0.85,
+        "platforms": 6
+      },
+      {
+        "code": "HWH",
+        "name": "HOWRAH JN",
+        "lat": 22.584078,
+        "lng": 88.340999,
+        "congestion_score": 0.98,
+        "platforms": 23
+      },
+      {
+        "code": "NDLS",
+        "name": "NEW DELHI",
+        "lat": 28.642314,
+        "lng": 77.220004,
+        "congestion_score": 0.99,
+        "platforms": 16
+      },
+      {
+        "code": "CSTM",
+        "name": "MUMBAI CST",
+        "lat": 18.944481,
+        "lng": 72.836903,
+        "congestion_score": 0.97,
+        "platforms": 18
+      },
+      {
+        "code": "MAS",
+        "name": "CHENNAI CENTRAL",
+        "lat": 13.084761,
+        "lng": 80.274856,
+        "congestion_score": 0.9,
+        "platforms": 12
+      },
+      {
+        "code": "SBC",
+        "name": "BANGALORE CITY JN",
+        "lat": 12.977595,
+        "lng": 77.568083,
+        "congestion_score": 0.88,
+        "platforms": 10
+      },
+      {
+        "code": "HYB",
+        "name": "HYDERABAD DECCAN",
+        "lat": 17.393363,
+        "lng": 78.467377,
+        "congestion_score": 0.85,
+        "platforms": 9
+      },
+      {
+        "code": "ADI",
+        "name": "AHMEDABAD JN",
+        "lat": 23.025515,
+        "lng": 72.601516,
+        "congestion_score": 0.84,
+        "platforms": 10
+      },
+      {
+        "code": "ST",
+        "name": "SURAT",
+        "lat": 21.206568,
+        "lng": 72.840793,
+        "congestion_score": 0.75,
+        "platforms": 5
+      },
+      {
+        "code": "BRC",
+        "name": "VADODARA JN",
+        "lat": 22.310756,
+        "lng": 73.181065,
+        "congestion_score": 0.78,
+        "platforms": 7
+      },
+      {
+        "code": "ANND",
+        "name": "ANAND JN",
+        "lat": 22.561307,
+        "lng": 72.965733,
+        "congestion_score": 0.55,
+        "platforms": 3
+      },
+      {
+        "code": "PNBE",
+        "name": "PATNA JN",
+        "lat": 25.60256,
+        "lng": 85.136824,
+        "congestion_score": 0.86,
+        "platforms": 8
+      },
+      {
+        "code": "DNR",
+        "name": "DANAPUR",
+        "lat": 25.581921,
+        "lng": 85.044629,
+        "congestion_score": 0.62,
+        "platforms": 3
+      },
+      {
+        "code": "MKA",
+        "name": "MOKAMEH JN",
+        "lat": 25.391885,
+        "lng": 85.913049,
+        "congestion_score": 0.55,
+        "platforms": 3
+      },
+      {
+        "code": "KIUL",
+        "name": "KIUL JN",
+        "lat": 25.171504,
+        "lng": 86.106198,
+        "congestion_score": 0.6,
+        "platforms": 3
+      },
+      {
+        "code": "BGP",
+        "name": "BHAGALPUR",
+        "lat": 25.241909,
+        "lng": 86.976792,
+        "congestion_score": 0.65,
+        "platforms": 4
+      },
+      {
+        "code": "GHY",
+        "name": "GUWAHATI",
+        "lat": 26.182635,
+        "lng": 91.751851,
+        "congestion_score": 0.75,
+        "platforms": 5
+      },
+      {
+        "code": "NJP",
+        "name": "NEW JALPAIGURI",
+        "lat": 26.683025,
+        "lng": 88.443391,
+        "congestion_score": 0.72,
+        "platforms": 4
+      },
+      {
+        "code": "BBS",
+        "name": "BHUBANESWAR",
+        "lat": 20.265388,
+        "lng": 85.842595,
+        "congestion_score": 0.75,
+        "platforms": 5
+      },
+      {
+        "code": "VSKP",
+        "name": "VISAKHAPATNAM",
+        "lat": 17.72159,
+        "lng": 83.289514,
+        "congestion_score": 0.8,
+        "platforms": 5
+      },
+      {
+        "code": "NZB",
+        "name": "NIZAMABAD",
+        "lat": 18.679165,
+        "lng": 78.103238,
+        "congestion_score": 0.55,
+        "platforms": 3
+      },
+      {
+        "code": "GBD",
+        "name": "GAURIBIDANUR",
+        "lat": 13.613081,
+        "lng": 77.512781,
+        "congestion_score": 0.55,
+        "platforms": 3
+      },
+      {
+        "code": "KSK",
+        "name": "KASIMKOTA",
+        "lat": 17.673315,
+        "lng": 82.963751,
+        "congestion_score": 0.4,
+        "platforms": 2
+      },
+      {
+        "code": "GPC",
+        "name": "GHATPINDRAI",
+        "lat": 22.952676,
+        "lng": 79.26631,
+        "congestion_score": 0.45,
+        "platforms": 2
+      }
+    ]
+  }
+}
