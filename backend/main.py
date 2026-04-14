@@ -1,7 +1,7 @@
 from fastapi  import FastAPI,WebSocket
-from routes.trains import router 
+from routes.trains import router,TRAINS
 import asyncio
-import json
+import json 
 
 app = FastAPI(title="RailDrishti API")
 app.include_router(router)
@@ -15,15 +15,8 @@ async def websocket_live(websocket: WebSocket):
     await websocket.accept()
     try:
         while True:
-            data = { 
-                "trains": [
-                {"id": "TN001", "lat": 19.0760, "lng": 72.8777, "speed": 60, "delay": 5, "status": "on time", "corridor id": "BPL-ET"},
-                {"id": "TN002", "lat": 28.6139, "lng": 77.2090, "speed": 80, "delay": 0 , "status": "on time", "corridor id": "NDLS-MGS"},
-                {"id": "TN003", "lat": 13.0827, "lng": 80.2707, "speed": 45, "delay": 12, "status": "delayed", "corridor id": "HWH-DHN"}
-                ]
-            }
-            await websocket.send_json(data)
-            await asyncio.sleep(1)
+            await websocket.send_json({"trains": TRAINS})
+            await asyncio.sleep(2)
     except Exception:
         await websocket.close()
 
