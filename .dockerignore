@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.venv/
+ml/venv/
+backend/__pycache__/
+backend/kafka/__pycache__/
+.git/
+Dockerfile
+deployment/**

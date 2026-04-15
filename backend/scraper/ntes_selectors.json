@@ -1,0 +1,17 @@
+{
+  "train_status_page": {
+    "train_number_input": "#input_train_number",
+    "search_button": "button[type=submit]",
+    "status_table": "table.train-status",
+    "delay_cell": "td.delay",
+    "station_cell": "td.current-station",
+    "timestamp_cell": "span.update-time"
+  },
+  "selectors": {
+    "departure_time": "td.departure-time",
+    "arrival_time": "td.arrival-time",
+    "status": "td.status",
+    "delay": "td.delay",
+    "current_position": "td.current-position"
+  }
+}

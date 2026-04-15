@@ -1,4 +1,5 @@
-﻿services:
+version: '3.8'
+services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
     container_name: zookeeper
@@ -39,7 +40,7 @@
     container_name: redis
     ports:
       - "6379:6379"
-    command: redis-server --appendonly yes
+    command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redis-data:/data
 
@@ -50,12 +51,44 @@
     container_name: raildrishti_producer
     depends_on:
       - kafka
-      - influxdb
       - redis
     environment:
       KAFKA_BROKER: kafka:9092
-      INFLUX_URL: http://influxdb:8086
-      REDIS_URL: redis://redis:6379
+      API_CONFIG_PATH: backend/data/api_config.json
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      RAPIDAPI_KEY: "${RAPIDAPI_KEY:-}"
+      RAPIDAPI_HOST: "${RAPIDAPI_HOST:-}"
+    command: ["python", "backend/kafka/producer.py"]
+    restart: unless-stopped
+
+  raildrishti-api:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile
+    container_name: raildrishti_api
+    depends_on:
+      - kafka
+      - redis
+    environment:
+      KAFKA_BROKER: kafka:9092
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+    ports:
+      - "8001:8001"
+    command: ["uvicorn", "backend.api.server:app", "--host", "0.0.0.0", "--port", "8001"]
+    restart: unless-stopped
+
+  raildrishti-inference:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile
+    container_name: raildrishti_inference
+    depends_on:
+      - redis
+    ports:
+      - "8000:8000"
+    command: ["uvicorn", "ml.inference_server:app", "--host", "0.0.0.0", "--port", "8000"]
     restart: unless-stopped
 
 volumes:

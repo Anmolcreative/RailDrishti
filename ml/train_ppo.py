@@ -1,9 +1,8 @@
 """
 RailDrishti — train_ppo.py
 Trains PPO agent on RailwayEnv using stable-baselines3.
-
-Install:  pip install stable-baselines3 gymnasium
-Run:      python train_ppo.py
+Install: pip install stable-baselines3 gymnasium
+Run: python train_ppo.py
 """
 
 import os
@@ -16,36 +15,40 @@ from stable_baselines3.common.callbacks import EvalCallback
 from environment.railway_env import RailwayEnv
 
 
-if __name__ == "__main__":
-    print("🚂 RailDrishti — PPO Training")
-    print("─" * 40)
+def train_ppo(
+    total_timesteps=20_000,
+    n_envs=4,
+    learning_rate=3e-4,
+    batch_size=64,
+    n_epochs=10,
+    tensorboard_log='./logs/ppo_raildrishti/',
+):
+    print("RailDrishti PPO Training")
+    print("-" * 40)
 
-    # Create environment
-    env = make_vec_env(RailwayEnv, n_envs=4)
-
-    # PPO agent
+    env = make_vec_env(RailwayEnv, n_envs=n_envs)
     model = PPO(
         "MlpPolicy",
         env,
         verbose=1,
-        learning_rate=3e-4,
+        learning_rate=learning_rate,
         n_steps=512,
-        batch_size=64,
-        n_epochs=10,
+        batch_size=batch_size,
+        n_epochs=n_epochs,
         gamma=0.99,
         ent_coef=0.01,
-        tensorboard_log="./logs/ppo_raildrishti/",
+        tensorboard_log=tensorboard_log,
     )
 
-    print("\n📉 Training for 20,000 timesteps ...")
-    model.learn(total_timesteps=20_000)
+    print(f"\nTraining for {total_timesteps:,} timesteps ...")
+    model.learn(total_timesteps=total_timesteps)
 
-    os.makedirs("model", exist_ok=True)
-    model.save("model/ppo_raildrishti")
-    print("\n✅ PPO model saved → model/ppo_raildrishti.zip")
+    os.makedirs('model', exist_ok=True)
+    model_path = 'model/ppo_raildrishti'
+    model.save(model_path)
+    print(f"\nPPO model saved -> {model_path}.zip")
 
-    # Quick eval
-    print("\n🔍 Evaluating ...")
+    print("\nEvaluating ...")
     eval_env = RailwayEnv()
     obs, _ = eval_env.reset()
     total_reward = 0.0
@@ -59,4 +62,8 @@ if __name__ == "__main__":
             break
 
     print(f"\n  100-step total reward: {total_reward:.3f}")
-    print("✅ PPO training complete!")
+    print("PPO training complete!")
+
+
+if __name__ == "__main__":
+    train_ppo()

@@ -1,0 +1,37 @@
+{
+  "feature_columns": [
+    "delay_minutes",
+    "corridor_congestion_score",
+    "trains_ahead_count",
+    "speed_deviation_pct",
+    "hour_sin",
+    "hour_cos",
+    "day_of_week_sin",
+    "day_of_week_cos",
+    "weather_severity",
+    "platform_free",
+    "headway_min",
+    "priority",
+    "is_vip_train",
+    "historical_avg_delay_min",
+    "conflict_flag",
+    "station_code",
+    "corridor_id",
+    "zone_id",
+    "train_type",
+    "weather_state"
+  ],
+  "categorical_columns": [
+    "station_code",
+    "corridor_id",
+    "zone_id",
+    "train_type",
+    "weather_state"
+  ],
+  "action_order": [
+    "APPROVE",
+    "HOLD",
+    "REROUTE",
+    "PRIORITY_OVERRIDE"
+  ]
+}
