@@ -16,14 +16,14 @@ const getStationColor = (congestion) => {
 };
 
 const CUSTOM_STATION_ICONS = {
-  12: '/station-kolkata.png',    // Howrah Jn - Kolkata
-  13: '/station-delhi.png',       // New Delhi
-  14: '/station-mumbai.png',      // Mumbai CST
-  15: '/station-chennai.png',     // Chennai Central
-  17: '/station-hyderabad.png',   // Hyderabad Deccan
-  23: '/station-jaipur.png',      // Jaipur Jn
-  26: '/station-agra.png',        // Agra Cantt
-  80: '/station-amritsar.png',    // Amritsar Jn
+  18: '/station-kolkata.png',    // Howrah Jn - Kolkata
+  5: '/station-delhi.png',       // New Delhi
+  71: '/station-mumbai.png',     // Mumbai CST
+  72: '/station-chennai.png',    // Chennai Central
+  61: '/station-hyderabad.png',  // Hyderabad Deccan
+  51: '/station-jaipur.png',     // Jaipur Jn
+  10: '/station-agra.png',       // Agra Cantt
+  90: '/station-amritsar.png',   // Amritsar Jn
 };
 
 // Adjustable icon sizes - modify these to change map marker size
