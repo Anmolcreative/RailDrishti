@@ -1,0 +1,25 @@
+{
+  "name": "raildrishti-backend",
+  "version": "2.0.0",
+  "description": "RailDrishti Node.js backend — NTES scraper + WebSocket server",
+  "private": true,
+  "scripts": {
+    "scraper": "node ntes_scraper.js",
+    "ws": "node ws_server.js",
+    "dev:scraper": "nodemon ntes_scraper.js",
+    "dev:ws": "nodemon ws_server.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "ioredis": "^5.3.2",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "ws": "^8.17.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

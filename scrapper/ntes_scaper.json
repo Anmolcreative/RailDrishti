@@ -1,0 +1,10 @@
+{
+  "_comment": "Externalised NTES CSS selectors — update here when NTES redesigns without touching scraper code",
+  "_last_verified": "2026-04-01",
+  "currentStation":  ".train-details .current-station span",
+  "delayMinutes":    ".train-details .delay-info .delay-value",
+  "departureActual": ".schedule-table tbody tr:first-child .actual-departure",
+  "arrivalActual":   ".schedule-table tbody tr:last-child .actual-arrival",
+  "trainName":       ".train-header .train-name",
+  "trainStatus":     ".train-header .train-status-badge"
+}

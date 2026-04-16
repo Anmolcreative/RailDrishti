@@ -1,0 +1,347 @@
+"""
+timetable_loader.py — Trains at a Glance 2026 schedule data.
+Provides per-station arrival/departure windows and journey time calculations.
+"""
+
+import logging
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta, time as dtime
+from typing import Dict, List, Optional, Tuple
+
+from ml.config import TRAINS, CORRIDORS, TrainConfig
+
+logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Data classes
+# ---------------------------------------------------------------------------
+
+@dataclass
+class StationStop:
+    """A single stop in a train's timetable."""
+    station_code: str
+    station_name: str
+    arrival: Optional[str]      # HH:MM or None (origin)
+    departure: Optional[str]    # HH:MM or None (terminus)
+    halt_min: int               # scheduled halt in minutes
+    distance_km: float          # from origin
+    day: int                    # journey day (1-indexed)
+
+
+@dataclass
+class TrainSchedule:
+    """Full timetable for one train."""
+    train_no: str
+    train_name: str
+    corridor: str
+    origin: str
+    destination: str
+    stops: List[StationStop] = field(default_factory=list)
+    days_of_run: List[str] = field(default_factory=list)
+
+    def get_stop(self, station_code: str) -> Optional[StationStop]:
+        return next((s for s in self.stops if s.station_code == station_code), None)
+
+    def expected_arrival_at(self, station_code: str) -> Optional[str]:
+        stop = self.get_stop(station_code)
+        return stop.arrival if stop else None
+
+    def expected_departure_from(self, station_code: str) -> Optional[str]:
+        stop = self.get_stop(station_code)
+        return stop.departure if stop else None
+
+    def journey_minutes_between(self, from_code: str, to_code: str) -> Optional[int]:
+        """Calculate scheduled journey minutes between two stations."""
+        from_stop = self.get_stop(from_code)
+        to_stop = self.get_stop(to_code)
+        if not from_stop or not to_stop:
+            return None
+        dep = _parse_hhmm(from_stop.departure)
+        arr = _parse_hhmm(to_stop.arrival)
+        if not dep or not arr:
+            return None
+        delta = (arr - dep).total_seconds() / 60
+        # Add day offset
+        day_diff = (to_stop.day - from_stop.day) * 1440
+        return int(delta + day_diff) if delta + day_diff >= 0 else int(delta + day_diff + 1440)
+
+
+def _parse_hhmm(t: Optional[str]) -> Optional[datetime]:
+    if not t:
+        return None
+    try:
+        return datetime.strptime(t, "%H:%M")
+    except ValueError:
+        return None
+
+
+def _add_minutes(t: str, mins: int) -> str:
+    """Add minutes to HH:MM string, wrapping at midnight."""
+    try:
+        base = datetime.strptime(t, "%H:%M")
+        result = base + timedelta(minutes=mins)
+        return result.strftime("%H:%M")
+    except ValueError:
+        return t
+
+
+# ---------------------------------------------------------------------------
+# Built-in schedule data (Trains at a Glance 2026 representative subset)
+# ---------------------------------------------------------------------------
+
+# Format: {train_no: [(stn_code, stn_name, arr, dep, halt, dist_km, day)]}
+_SCHEDULE_DATA: Dict[str, List[Tuple]] = {
+
+    # 12951 Mumbai Rajdhani NDLS→CSTM
+    "12951": [
+        ("NDLS", "New Delhi",        None,  "16:55", 0,  0,    1),
+        ("MTJ",  "Mathura Jn",       "18:35","18:37", 2,  141,  1),
+        ("AGC",  "Agra Cantt",       "19:02","19:05", 3,  188,  1),
+        ("GWL",  "Gwalior Jn",       "20:05","20:10", 5,  304,  1),
+        ("JHS",  "Jhansi Jn",        "21:10","21:25",15,  403,  1),
+        ("BPL",  "Bhopal Jn",        "23:45","23:55",10,  706,  1),
+        ("ET",   "Itarsi Jn",        "01:10","01:20",10,  799,  2),
+        ("KNW",  "Khandwa",          "02:45","02:47", 2,  877,  2),
+        ("RTM",  "Ratlam Jn",        "04:10","04:20",10,  968,  2),
+        ("VDA",  "Vadodara",         "06:35","06:40", 5, 1196,  2),
+        ("BRC",  "Vadodara Jn",      "06:40","06:45", 5, 1198,  2),
+        ("ADI",  "Ahmedabad",        None,   None,   0, 1256,  2),
+        ("ST",   "Surat",            "08:35","08:40", 5, 1337,  2),
+        ("BVI",  "Borivali",         "10:15","10:17", 2, 1368,  2),
+        ("CSTM", "Mumbai CST",       "10:35", None,  0, 1384,  2),
+    ],
+
+    # 12301 Howrah Rajdhani NDLS→HWH
+    "12301": [
+        ("NDLS", "New Delhi",        None,  "17:00", 0,    0,   1),
+        ("CNB",  "Kanpur Central",   "20:38","20:40", 2,  440,  1),
+        ("ALD",  "Prayagraj Jn",     "22:15","22:25",10,  634,  1),
+        ("MGS",  "Mughal Sarai",     "23:40","00:05",25,  789,  1),
+        ("DDU",  "DDU Jn",          "00:10","00:20",10,  803,  2),
+        ("ARA",  "Ara",             "01:35","01:37", 2,  925,  2),
+        ("PNBE", "Patna Jn",        "02:20","02:30",10,  993,  2),
+        ("GAYA", "Gaya Jn",         "04:15","04:20", 5, 1105,  2),
+        ("DHN",  "Dhanbad Jn",      "06:45","06:50", 5, 1275,  2),
+        ("ASN",  "Asansol Jn",      "07:45","07:50", 5, 1330,  2),
+        ("BWN",  "Burdwan",         "08:55","08:57", 2, 1405,  2),
+        ("HWH",  "Howrah Jn",       "09:55", None,  0, 1441,  2),
+    ],
+
+    # 11041 Chennai Mumbai Express MAS→CSTM
+    "11041": [
+        ("MAS",  "Chennai Central",  None,  "12:50", 0,    0,   1),
+        ("AJJ",  "Arakkonam",       "14:08","14:10", 2,   68,  1),
+        ("KPD",  "Katpadi",         "15:28","15:30", 2,  130,  1),
+        ("JTJ",  "Jolarpettai",     "16:50","16:55", 5,  196,  1),
+        ("SA",   "Salem Jn",        "18:30","18:40",10,  267,  1),
+        ("ED",   "Erode Jn",        "19:50","20:00",10,  344,  1),
+        ("CBE",  "Coimbatore Jn",   "21:00","21:15",15,  402,  1),
+        ("PGT",  "Palakkad",        "22:10","22:15", 5,  453,  1),
+        ("SRR",  "Shoranur",        "22:50","23:00",10,  484,  1),
+        ("CLT",  "Kozhikode",       "00:30","00:35", 5,  553,  2),
+        ("MAQ",  "Mangaluru Jn",    "03:50","04:00",10,  692,  2),
+        ("MAO",  "Madgaon",         "07:30","07:40",10,  894,  2),
+        ("CSTM", "Mumbai CST",      "23:00", None,  0, 1279,  2),
+    ],
+
+    # 12303 Poorva Express NDLS→HWH (shortened schedule)
+    "12303": [
+        ("NDLS", "New Delhi",        None,  "08:00", 0,    0,   1),
+        ("CNB",  "Kanpur Central",   "11:55","12:00", 5,  440,  1),
+        ("ALD",  "Prayagraj Jn",     "13:55","14:00", 5,  634,  1),
+        ("MGS",  "Mughal Sarai",     "15:30","15:40",10,  789,  1),
+        ("PNBE", "Patna Jn",        "18:00","18:15",15,  993,  1),
+        ("DHN",  "Dhanbad Jn",      "22:00","22:10",10, 1275,  1),
+        ("HWH",  "Howrah Jn",       "02:45", None,  0, 1441,  2),
+    ],
+
+    # 12621 Tamil Nadu Express MAS→NDLS
+    "12621": [
+        ("MAS",  "Chennai Central",  None,  "22:00", 0,    0,   1),
+        ("AJJ",  "Arakkonam",       "23:05","23:07", 2,   68,  1),
+        ("KPD",  "Katpadi",         "00:30","00:35", 5,  130,  2),
+        ("JTJ",  "Jolarpettai",     "01:45","01:50", 5,  196,  2),
+        ("SA",   "Salem Jn",        "03:15","03:20", 5,  267,  2),
+        ("ED",   "Erode Jn",        "04:35","04:45",10,  344,  2),
+        ("CBE",  "Coimbatore Jn",   "05:55","06:10",15,  402,  2),
+        ("KPD",  "Katpadi",         None,   None,   0,  130,  2),  # different route
+        ("BPL",  "Bhopal Jn",       "23:05","23:15",10,  706,  2),
+        ("AGC",  "Agra Cantt",       "02:55","03:00", 5,  188,  3),
+        ("NDLS", "New Delhi",        "07:40", None,  0, 2200,  3),  # ~2200 km
+    ],
+}
+
+
+# ---------------------------------------------------------------------------
+# Timetable loader
+# ---------------------------------------------------------------------------
+
+class TimetableLoader:
+    """Manages train schedules and provides lookup utilities."""
+
+    def __init__(self):
+        self._schedules: Dict[str, TrainSchedule] = {}
+        self._built = False
+
+    def build(self) -> "TimetableLoader":
+        """Build schedule registry from built-in + config data."""
+        self._load_from_data()
+        self._load_from_config()
+        self._built = True
+        logger.info(f"TimetableLoader built: {len(self._schedules)} schedules loaded")
+        return self
+
+    def _load_from_data(self):
+        """Load detailed stop-by-stop schedules from _SCHEDULE_DATA."""
+        for train_no, stop_tuples in _SCHEDULE_DATA.items():
+            train_cfg = TRAINS.get(train_no)
+            stops = [
+                StationStop(
+                    station_code=t[0], station_name=t[1],
+                    arrival=t[2], departure=t[3], halt_min=t[4],
+                    distance_km=float(t[5]), day=t[6],
+                )
+                for t in stop_tuples
+            ]
+            self._schedules[train_no] = TrainSchedule(
+                train_no=train_no,
+                train_name=train_cfg.name if train_cfg else train_no,
+                corridor=train_cfg.corridor if train_cfg else "unknown",
+                origin=stops[0].station_code if stops else "",
+                destination=stops[-1].station_code if stops else "",
+                stops=stops,
+                days_of_run=train_cfg.days if train_cfg else ["Daily"],
+            )
+
+    def _load_from_config(self):
+        """Load trains from config that don't have detailed stop data."""
+        for train_no, train_cfg in TRAINS.items():
+            if train_no in self._schedules:
+                continue
+            corridor = CORRIDORS.get(train_cfg.corridor)
+            if not corridor:
+                continue
+            stops = self._generate_stops(train_cfg, corridor)
+            self._schedules[train_no] = TrainSchedule(
+                train_no=train_no,
+                train_name=train_cfg.name,
+                corridor=train_cfg.corridor,
+                origin=train_cfg.origin,
+                destination=train_cfg.destination,
+                stops=stops,
+                days_of_run=train_cfg.days,
+            )
+
+    @staticmethod
+    def _generate_stops(
+        train_cfg: TrainConfig, corridor: "CorridorConfig"
+    ) -> List[StationStop]:
+        """
+        Generate approximate stop sequence by interpolating between
+        origin departure and destination arrival.
+        """
+        stations = corridor.stations
+        n = len(stations)
+        if n == 0:
+            return []
+
+        dep = _parse_hhmm(train_cfg.departure) or datetime.strptime("00:00", "%H:%M")
+        arr = _parse_hhmm(train_cfg.arrival) or datetime.strptime("12:00", "%H:%M")
+
+        # Handle overnight trains
+        if arr <= dep:
+            arr += timedelta(days=1)
+        total_mins = (arr - dep).total_seconds() / 60
+
+        step = total_mins / max(n - 1, 1)
+        stops = []
+        total_dist = corridor.total_distance_km
+        dist_step = total_dist / max(n - 1, 1)
+
+        for i, stn_code in enumerate(stations):
+            elapsed = step * i
+            t = dep + timedelta(minutes=elapsed)
+            is_origin = (i == 0)
+            is_dest = (i == n - 1)
+            stops.append(StationStop(
+                station_code=stn_code,
+                station_name=stn_code,
+                arrival=None if is_origin else t.strftime("%H:%M"),
+                departure=None if is_dest else t.strftime("%H:%M"),
+                halt_min=0 if (is_origin or is_dest) else 2,
+                distance_km=round(dist_step * i, 1),
+                day=1 + int(elapsed // 1440),
+            ))
+        return stops
+
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
+
+    def get_schedule(self, train_no: str) -> Optional[TrainSchedule]:
+        return self._schedules.get(train_no)
+
+    def all_schedules(self) -> Dict[str, TrainSchedule]:
+        return dict(self._schedules)
+
+    def trains_at_station(self, station_code: str) -> List[TrainSchedule]:
+        """Return all trains that stop at the given station."""
+        return [
+            s for s in self._schedules.values()
+            if any(stop.station_code == station_code for stop in s.stops)
+        ]
+
+    def expected_at(
+        self, station_code: str, window_minutes: int = 120
+    ) -> List[Dict]:
+        """
+        Return list of trains expected at station_code in next window_minutes.
+        Each entry: {train_no, name, arrival, departure, halt_min}
+        """
+        now = datetime.now()
+        current_hhmm = now.strftime("%H:%M")
+        result = []
+        for schedule in self.trains_at_station(station_code):
+            stop = schedule.get_stop(station_code)
+            if not stop:
+                continue
+            arr = stop.arrival or stop.departure
+            if not arr:
+                continue
+            arr_dt = _parse_hhmm(arr)
+            if not arr_dt:
+                continue
+            now_dt = _parse_hhmm(current_hhmm)
+            if not now_dt:
+                continue
+            diff = (arr_dt - now_dt).total_seconds() / 60
+            if -10 <= diff <= window_minutes:
+                result.append({
+                    "train_no": schedule.train_no,
+                    "name": schedule.train_name,
+                    "arrival": stop.arrival,
+                    "departure": stop.departure,
+                    "halt_min": stop.halt_min,
+                    "distance_from_origin": stop.distance_km,
+                })
+        return sorted(result, key=lambda x: x["arrival"] or x["departure"] or "")
+
+    def corridor_trains(self, corridor_key: str) -> List[TrainSchedule]:
+        return [s for s in self._schedules.values() if s.corridor == corridor_key]
+
+    def count(self) -> int:
+        return len(self._schedules)
+
+
+# ---------------------------------------------------------------------------
+# Singleton
+# ---------------------------------------------------------------------------
+_loader: Optional[TimetableLoader] = None
+
+
+def get_timetable_loader() -> TimetableLoader:
+    global _loader
+    if _loader is None:
+        _loader = TimetableLoader().build()
+    return _loader

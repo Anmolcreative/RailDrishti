@@ -1,0 +1,283 @@
+"""
+delay_synthesizer.py — Synthetic delay generator for training data.
+Uses Gaussian noise + realistic 4-hour cascade propagation across corridor graph.
+"""
+
+import logging
+import random
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from typing import Dict, List, Optional, Set, Tuple
+
+import numpy as np
+
+from ml.config import (
+    CORRIDORS, TRAINS, DELAY_MEAN_MIN, DELAY_STD_MIN, DELAY_MAX_MIN,
+    CASCADE_PROPAGATION_HOURS, CASCADE_DAMPENING, JUNCTION_CASCADE_MULTIPLIER,
+)
+from ml.data.station_loader import get_station_loader
+
+logger = logging.getLogger(__name__)
+
+np.random.seed(42)
+
+
+# ---------------------------------------------------------------------------
+# Data classes
+# ---------------------------------------------------------------------------
+
+@dataclass
+class DelayEvent:
+    """Represents a delay event at a station for a train."""
+    train_no: str
+    station_code: str
+    delay_min: float
+    timestamp: str
+    cause: str              # "primary" | "cascade" | "weather" | "technical"
+    cascade_from: Optional[str] = None   # parent station_code if cascaded
+    cascade_generation: int = 0          # how many hops from root cause
+
+
+@dataclass
+class SyntheticDelayState:
+    """Snapshot of the full synthesized delay state for a training episode."""
+    episode_id: str
+    timestamp: str
+    delay_events: List[DelayEvent] = field(default_factory=list)
+    station_delays: Dict[str, float] = field(default_factory=dict)  # stn -> max delay
+    train_delays: Dict[str, float] = field(default_factory=dict)    # train -> delay
+    cascades_active: int = 0
+
+    def to_feature_array(self, station_order: List[str]) -> np.ndarray:
+        """Convert to ordered delay vector for GNN node features."""
+        return np.array(
+            [self.station_delays.get(s, 0.0) for s in station_order],
+            dtype=np.float32,
+        )
+
+
+# ---------------------------------------------------------------------------
+# Primary delay generator
+# ---------------------------------------------------------------------------
+
+class DelaySynthesizer:
+    """
+    Generates realistic delay scenarios for training the RL agent.
+    Uses:
+    1. Truncated Gaussian for primary delays
+    2. Graph-aware cascade propagation (4-hour window, 3 corridors)
+    3. Weather-correlated delay amplification
+    4. Junction multiplier for high-traffic nodes
+    """
+
+    CAUSE_WEIGHTS = {
+        "signal_failure": 0.20,
+        "loco_failure":   0.15,
+        "track_work":     0.15,
+        "station_congestion": 0.15,
+        "weather":        0.15,
+        "late_running":   0.10,
+        "crossing_wait":  0.10,
+    }
+
+    def __init__(self):
+        self._loader = get_station_loader()
+        self._rng = np.random.default_rng(seed=None)  # fresh seed per run
+
+    def _sample_primary_delay(self) -> float:
+        """Sample a primary delay from a truncated Gaussian."""
+        delay = self._rng.normal(DELAY_MEAN_MIN, DELAY_STD_MIN)
+        return float(np.clip(delay, 0.0, DELAY_MAX_MIN))
+
+    def _pick_cause(self) -> str:
+        causes = list(self.CAUSE_WEIGHTS.keys())
+        weights = list(self.CAUSE_WEIGHTS.values())
+        return self._rng.choice(causes, p=np.array(weights) / sum(weights))
+
+    def _cascade_from_station(
+        self,
+        source_code: str,
+        source_delay: float,
+        visited: Set[str],
+        generation: int = 0,
+        max_gen: int = 5,
+    ) -> List[DelayEvent]:
+        """
+        Recursively propagate delay from source_code to adjacent stations.
+        Dampens by CASCADE_DAMPENING each hop; stops after CASCADE_PROPAGATION_HOURS
+        or when delay < 1 minute.
+        """
+        events: List[DelayEvent] = []
+        if generation >= max_gen or source_delay < 1.0:
+            return events
+
+        station = self._loader.get(source_code)
+        if not station:
+            return events
+
+        for adj_code in station.adjacent:
+            if adj_code in visited:
+                continue
+            visited.add(adj_code)
+
+            adj_station = self._loader.get(adj_code)
+            multiplier = CASCADE_DAMPENING
+            if adj_station and adj_station.is_junction:
+                multiplier *= JUNCTION_CASCADE_MULTIPLIER
+
+            cascade_delay = source_delay * multiplier
+            cascade_delay += self._rng.normal(0, 2.0)  # noise
+            cascade_delay = max(0.0, cascade_delay)
+
+            if cascade_delay < 1.0:
+                continue
+
+            events.append(DelayEvent(
+                train_no="CASCADE",  # will be assigned to actual train by caller
+                station_code=adj_code,
+                delay_min=round(cascade_delay, 1),
+                timestamp=datetime.now(timezone.utc).isoformat(),
+                cause="cascade",
+                cascade_from=source_code,
+                cascade_generation=generation + 1,
+            ))
+
+            # Recurse
+            events.extend(self._cascade_from_station(
+                adj_code, cascade_delay, visited, generation + 1, max_gen
+            ))
+
+        return events
+
+    def generate_episode(
+        self,
+        n_primary_events: Optional[int] = None,
+        weather_impact: Optional[Dict[str, float]] = None,
+    ) -> SyntheticDelayState:
+        """
+        Generate one training episode with primary delays + cascades.
+
+        Args:
+            n_primary_events: Number of primary delay events (random if None)
+            weather_impact: Dict {station_code: 0-1 impact score} amplifies delays
+        """
+        if n_primary_events is None:
+            n_primary_events = int(self._rng.integers(1, 8))
+
+        episode_id = f"ep_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S_%f')}"
+        all_events: List[DelayEvent] = []
+        station_delays: Dict[str, float] = {}
+        train_delays: Dict[str, float] = {}
+
+        # Get all available stations and trains
+        all_stations = list(self._loader.all().keys())
+        all_trains = list(TRAINS.keys())
+
+        # --- 1. Primary events ---
+        for _ in range(n_primary_events):
+            station_code = random.choice(all_stations)
+            train_no = random.choice(all_trains)
+            delay = self._sample_primary_delay()
+
+            # Amplify if adverse weather at this station
+            if weather_impact and station_code in weather_impact:
+                delay *= (1.0 + weather_impact[station_code])
+                delay = min(delay, DELAY_MAX_MIN)
+
+            cause = self._pick_cause()
+            event = DelayEvent(
+                train_no=train_no,
+                station_code=station_code,
+                delay_min=round(delay, 1),
+                timestamp=datetime.now(timezone.utc).isoformat(),
+                cause=cause,
+            )
+            all_events.append(event)
+            station_delays[station_code] = max(
+                station_delays.get(station_code, 0.0), delay
+            )
+            train_delays[train_no] = max(train_delays.get(train_no, 0.0), delay)
+
+            # --- 2. Cascade from this station ---
+            if delay > 5.0:
+                visited: Set[str] = {station_code}
+                cascade_events = self._cascade_from_station(
+                    station_code, delay, visited
+                )
+                for ce in cascade_events:
+                    # Assign to same train
+                    ce.train_no = train_no
+                    # Weather amplification for cascaded station
+                    if weather_impact and ce.station_code in weather_impact:
+                        ce.delay_min *= (1.0 + weather_impact[ce.station_code] * 0.5)
+                        ce.delay_min = min(ce.delay_min, DELAY_MAX_MIN)
+                    all_events.append(ce)
+                    station_delays[ce.station_code] = max(
+                        station_delays.get(ce.station_code, 0.0), ce.delay_min
+                    )
+                    train_delays[train_no] = max(
+                        train_delays.get(train_no, 0.0), ce.delay_min
+                    )
+
+        cascades_active = sum(1 for e in all_events if e.cause == "cascade")
+
+        state = SyntheticDelayState(
+            episode_id=episode_id,
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            delay_events=all_events,
+            station_delays=station_delays,
+            train_delays=train_delays,
+            cascades_active=cascades_active,
+        )
+
+        logger.debug(
+            f"Episode {episode_id}: {n_primary_events} primary, "
+            f"{cascades_active} cascade events, "
+            f"{len(station_delays)} stations affected"
+        )
+        return state
+
+    def generate_batch(
+        self, n_episodes: int, weather_impact: Optional[Dict[str, float]] = None
+    ) -> List[SyntheticDelayState]:
+        """Generate multiple training episodes."""
+        return [self.generate_episode(weather_impact=weather_impact) for _ in range(n_episodes)]
+
+    def station_delay_matrix(
+        self, state: SyntheticDelayState, station_order: List[str]
+    ) -> np.ndarray:
+        """Return delay vector in station_order for use as GNN node features."""
+        return state.to_feature_array(station_order)
+
+    def simulate_intervention(
+        self, state: SyntheticDelayState, action_station: str, reduce_by_min: float
+    ) -> SyntheticDelayState:
+        """
+        Simulate an operational intervention (e.g. speed increase, priority routing).
+        Returns a new state with reduced delays.
+        """
+        import copy
+        new_state = copy.deepcopy(state)
+        if action_station in new_state.station_delays:
+            old = new_state.station_delays[action_station]
+            new_state.station_delays[action_station] = max(0.0, old - reduce_by_min)
+        return new_state
+
+
+# ---------------------------------------------------------------------------
+# Singleton / convenience
+# ---------------------------------------------------------------------------
+_synthesizer: Optional[DelaySynthesizer] = None
+
+
+def get_synthesizer() -> DelaySynthesizer:
+    global _synthesizer
+    if _synthesizer is None:
+        _synthesizer = DelaySynthesizer()
+    return _synthesizer
+
+
+def generate_training_episode(
+    weather_impact: Optional[Dict[str, float]] = None,
+) -> SyntheticDelayState:
+    return get_synthesizer().generate_episode(weather_impact=weather_impact)

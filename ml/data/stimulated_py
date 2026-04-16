@@ -1,0 +1,306 @@
+"""
+simulated_feed.py — Simulated data feed for training (100 stations, 15-min loop).
+Generates synthetic delay states with realistic patterns.
+Used only for training; live_feed.py handles production data.
+"""
+
+import json
+import logging
+import queue
+import threading
+import time
+from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
+from typing import Callable, Dict, List, Optional
+
+import numpy as np
+
+from ml.config import (
+    CORRIDORS, TRAINS, SIMULATED_FEED_INTERVAL_SEC, KAFKA_TOPIC_LIVE,
+)
+from ml.data.station_loader import get_station_loader
+from ml.data.delay_synthesizer import DelaySynthesizer, SyntheticDelayState
+from ml.data.weather_client import WeatherClient, WeatherObservation
+
+logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# SimulatedEvent — mirrors LiveEvent structure for drop-in compatibility
+# ---------------------------------------------------------------------------
+
+@dataclass
+class SimulatedEvent:
+    train_no: str
+    train_name: str
+    station_code: str
+    station_name: str
+    delay_min: float
+    timestamp: str
+    source: str = "simulated"
+    corridor: str = ""
+    is_running: bool = True
+    confidence: float = 1.0
+    episode_id: str = ""
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
+
+
+# ---------------------------------------------------------------------------
+# SimulatedFeed
+# ---------------------------------------------------------------------------
+
+class SimulatedFeed:
+    """
+    Generates simulated train delay data for model training.
+    Runs in a background thread, emitting a new SyntheticDelayState every
+    SIMULATED_FEED_INTERVAL_SEC seconds.
+
+    Features:
+    - Gaussian primary delays + cascade propagation
+    - Weather-correlated amplification (uses cached weather data or mock)
+    - Realistic temporal patterns (rush hours, night, seasonal)
+    - Publishes to in-memory queue for training loop consumption
+    """
+
+    # Rush hour multipliers (hour_of_day -> multiplier)
+    HOURLY_MULTIPLIER = {
+        6: 1.3, 7: 1.8, 8: 2.0, 9: 1.7, 10: 1.2, 11: 1.0,
+        12: 1.1, 13: 1.1, 14: 1.0, 15: 1.0, 16: 1.2, 17: 1.7,
+        18: 2.0, 19: 1.8, 20: 1.5, 21: 1.2, 22: 0.9, 23: 0.8,
+        0: 0.7, 1: 0.6, 2: 0.6, 3: 0.7, 4: 0.8, 5: 1.0,
+    }
+
+    def __init__(
+        self,
+        on_state: Optional[Callable[[SyntheticDelayState], None]] = None,
+        on_event: Optional[Callable[[SimulatedEvent], None]] = None,
+        interval_sec: float = SIMULATED_FEED_INTERVAL_SEC,
+    ):
+        self._loader = get_station_loader()
+        self._synthesizer = DelaySynthesizer()
+        self._on_state = on_state
+        self._on_event = on_event
+        self._interval = interval_sec
+        self._event_queue: queue.Queue = queue.Queue(maxsize=50_000)
+        self._state_queue: queue.Queue = queue.Queue(maxsize=1000)
+        self._stop_event = threading.Event()
+        self._thread: Optional[threading.Thread] = None
+        self._episode_count = 0
+        self._total_events_generated = 0
+        self._all_stations = list(self._loader.all().keys())
+        self._rng = np.random.default_rng()
+
+        # Optional: cached weather impact for training realism
+        self._weather_impact: Dict[str, float] = {}
+
+    def start(self) -> "SimulatedFeed":
+        """Start background simulation thread."""
+        self._stop_event.clear()
+        self._thread = threading.Thread(
+            target=self._simulation_loop,
+            name="simulated-feed",
+            daemon=True,
+        )
+        self._thread.start()
+        logger.info(
+            f"SimulatedFeed started — interval={self._interval}s, "
+            f"stations={len(self._all_stations)}"
+        )
+        return self
+
+    def stop(self):
+        """Stop simulation thread."""
+        self._stop_event.set()
+        if self._thread:
+            self._thread.join(timeout=15)
+        logger.info(
+            f"SimulatedFeed stopped — episodes={self._episode_count}, "
+            f"events={self._total_events_generated}"
+        )
+
+    def update_weather_impact(self, weather_map: Dict[str, float]):
+        """Update weather impact scores (call from main thread)."""
+        self._weather_impact = dict(weather_map)
+
+    # ------------------------------------------------------------------
+    # Core simulation loop
+    # ------------------------------------------------------------------
+
+    def _simulation_loop(self):
+        while not self._stop_event.is_set():
+            loop_start = time.time()
+            try:
+                self._run_episode()
+            except Exception as e:
+                logger.error(f"Simulation episode error: {e}", exc_info=True)
+            elapsed = time.time() - loop_start
+            sleep_time = max(0, self._interval - elapsed)
+            self._stop_event.wait(timeout=sleep_time)
+
+    def _run_episode(self):
+        """Generate one synthetic episode and emit events."""
+        hour = datetime.now().hour
+        temporal_mult = self.HOURLY_MULTIPLIER.get(hour, 1.0)
+
+        # Scale number of primary events by time of day
+        n_primary = max(1, int(self._rng.integers(1, 6) * temporal_mult))
+
+        # Weather impact (if available)
+        weather = dict(self._weather_impact) if self._weather_impact else None
+
+        # Generate state
+        state = self._synthesizer.generate_episode(
+            n_primary_events=n_primary,
+            weather_impact=weather,
+        )
+        self._episode_count += 1
+
+        # Emit state-level event
+        try:
+            self._state_queue.put_nowait(state)
+        except queue.Full:
+            try:
+                self._state_queue.get_nowait()
+                self._state_queue.put_nowait(state)
+            except queue.Empty:
+                pass
+
+        if self._on_state:
+            try:
+                self._on_state(state)
+            except Exception as e:
+                logger.error(f"on_state callback error: {e}")
+
+        # Emit per-event records
+        for delay_event in state.delay_events:
+            sim_event = self._delay_event_to_sim_event(delay_event, state.episode_id)
+            try:
+                self._event_queue.put_nowait(sim_event)
+            except queue.Full:
+                try:
+                    self._event_queue.get_nowait()
+                    self._event_queue.put_nowait(sim_event)
+                except queue.Empty:
+                    pass
+            self._total_events_generated += 1
+
+            if self._on_event:
+                try:
+                    self._on_event(sim_event)
+                except Exception as e:
+                    logger.error(f"on_event callback error: {e}")
+
+        logger.debug(
+            f"Episode {self._episode_count} generated: "
+            f"{len(state.delay_events)} events, "
+            f"{state.cascades_active} cascades"
+        )
+
+    @staticmethod
+    def _delay_event_to_sim_event(
+        delay_event, episode_id: str
+    ) -> SimulatedEvent:
+        """Convert a DelaySynthesizer event to SimulatedEvent."""
+        from ml.config import TRAINS
+        train_cfg = TRAINS.get(delay_event.train_no)
+        return SimulatedEvent(
+            train_no=delay_event.train_no,
+            train_name=train_cfg.name if train_cfg else delay_event.train_no,
+            station_code=delay_event.station_code,
+            station_name=delay_event.station_code,
+            delay_min=delay_event.delay_min,
+            timestamp=delay_event.timestamp,
+            source="simulated",
+            corridor=train_cfg.corridor if train_cfg else "unknown",
+            is_running=True,
+            confidence=1.0,
+            episode_id=episode_id,
+        )
+
+    # ------------------------------------------------------------------
+    # Public accessors
+    # ------------------------------------------------------------------
+
+    def consume_state(self, timeout: float = 1.0) -> Optional[SyntheticDelayState]:
+        """Blocking consume next synthesized state (for training loop)."""
+        try:
+            return self._state_queue.get(timeout=timeout)
+        except queue.Empty:
+            return None
+
+    def consume_event(self, timeout: float = 1.0) -> Optional[SimulatedEvent]:
+        """Blocking consume next event."""
+        try:
+            return self._event_queue.get(timeout=timeout)
+        except queue.Empty:
+            return None
+
+    def drain_states(self) -> List[SyntheticDelayState]:
+        """Non-blocking drain all pending states."""
+        states = []
+        while True:
+            try:
+                states.append(self._state_queue.get_nowait())
+            except queue.Empty:
+                break
+        return states
+
+    def drain_events(self) -> List[SimulatedEvent]:
+        """Non-blocking drain all pending events."""
+        events = []
+        while True:
+            try:
+                events.append(self._event_queue.get_nowait())
+            except queue.Empty:
+                break
+        return events
+
+    def generate_training_batch(
+        self, n_episodes: int, weather_impact: Optional[Dict[str, float]] = None
+    ) -> List[SyntheticDelayState]:
+        """
+        Synchronously generate a training batch without threading.
+        Use this for offline training data generation.
+        """
+        return self._synthesizer.generate_batch(
+            n_episodes=n_episodes, weather_impact=weather_impact
+        )
+
+    def generate_observation_array(
+        self, state: SyntheticDelayState
+    ) -> np.ndarray:
+        """
+        Convert a SyntheticDelayState to a flat numpy array
+        ordered by station index for GNN input.
+        """
+        ordered = [s.code for s in self._loader.all_list()]
+        return state.to_feature_array(ordered)
+
+    @property
+    def stats(self) -> dict:
+        return {
+            "episode_count": self._episode_count,
+            "total_events": self._total_events_generated,
+            "event_queue_size": self._event_queue.qsize(),
+            "state_queue_size": self._state_queue.qsize(),
+            "interval_sec": self._interval,
+            "monitored_stations": len(self._all_stations),
+        }
+
+
+# ---------------------------------------------------------------------------
+# Singleton
+# ---------------------------------------------------------------------------
+_feed: Optional[SimulatedFeed] = None
+
+
+def get_simulated_feed() -> SimulatedFeed:
+    global _feed
+    if _feed is None:
+        _feed = SimulatedFeed()
+    return _feed

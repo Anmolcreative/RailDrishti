@@ -1,0 +1,304 @@
+"""
+corridor_graph.py — Directed graph representation of 3 railway corridors.
+Builds networkx DiGraph with junction nodes, edge weights, and PyG-compatible
+edge_index tensors.
+"""
+
+import logging
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Set, Tuple
+
+import numpy as np
+
+try:
+    import networkx as nx
+    HAS_NX = True
+except ImportError:
+    HAS_NX = False
+    logging.getLogger(__name__).warning(
+        "networkx not installed — corridor_graph will use lightweight fallback"
+    )
+
+from ml.config import CORRIDORS
+from ml.data.station_loader import get_station_loader, Station
+
+logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Edge / Node metadata
+# ---------------------------------------------------------------------------
+
+@dataclass
+class EdgeInfo:
+    src: str            # station code
+    dst: str            # station code
+    src_idx: int
+    dst_idx: int
+    distance_km: float
+    avg_speed_kmh: float
+    corridor: str
+    weight: float       # inverse distance (higher = closer)
+
+
+@dataclass
+class NodeInfo:
+    code: str
+    index: int
+    lat: float
+    lon: float
+    is_junction: bool
+    corridors: List[str]
+    degree: int = 0     # filled after graph build
+
+
+# ---------------------------------------------------------------------------
+# CorridorGraph
+# ---------------------------------------------------------------------------
+
+class CorridorGraph:
+    """
+    Builds a directed graph spanning all 3 railway corridors.
+    Shared junction stations (NDLS, BPL, etc.) connect corridors.
+    Provides edge_index and edge_attr tensors for PyTorch Geometric GCN.
+    """
+
+    def __init__(self):
+        self._loader = get_station_loader()
+        self._graph = nx.DiGraph() if HAS_NX else None
+        self._nodes: Dict[str, NodeInfo] = {}
+        self._edges: List[EdgeInfo] = []
+        self._built = False
+
+    def build(self) -> "CorridorGraph":
+        """Build the graph from corridor configs."""
+        self._build_nodes()
+        self._build_edges()
+        if HAS_NX and self._graph is not None:
+            self._populate_nx()
+        self._update_degrees()
+        self._built = True
+        logger.info(
+            f"CorridorGraph built: {len(self._nodes)} nodes, "
+            f"{len(self._edges)} directed edges, "
+            f"{sum(1 for n in self._nodes.values() if n.is_junction)} junctions"
+        )
+        return self
+
+    def _build_nodes(self):
+        """Create node info for all stations."""
+        for station in self._loader.all_list():
+            self._nodes[station.code] = NodeInfo(
+                code=station.code,
+                index=station.index,
+                lat=station.lat,
+                lon=station.lon,
+                is_junction=station.is_junction,
+                corridors=list(station.corridors),
+            )
+
+    def _build_edges(self):
+        """Build directed edges from corridor station sequences."""
+        seen_edges: Set[Tuple[str, str]] = set()
+
+        for corridor_key, corridor in CORRIDORS.items():
+            stations = corridor.stations
+            n = len(stations)
+            # Approximate distance per segment
+            seg_dist = corridor.total_distance_km / max(n - 1, 1)
+
+            for i in range(n - 1):
+                src_code = stations[i]
+                dst_code = stations[i + 1]
+                src = self._loader.get(src_code)
+                dst = self._loader.get(dst_code)
+                if not src or not dst:
+                    continue
+
+                # Forward edge
+                if (src_code, dst_code) not in seen_edges:
+                    seen_edges.add((src_code, dst_code))
+                    self._edges.append(EdgeInfo(
+                        src=src_code, dst=dst_code,
+                        src_idx=src.index, dst_idx=dst.index,
+                        distance_km=seg_dist,
+                        avg_speed_kmh=corridor.avg_speed_kmh,
+                        corridor=corridor_key,
+                        weight=1.0 / max(seg_dist, 1.0),
+                    ))
+
+                # Reverse edge (trains run both directions)
+                if (dst_code, src_code) not in seen_edges:
+                    seen_edges.add((dst_code, src_code))
+                    self._edges.append(EdgeInfo(
+                        src=dst_code, dst=src_code,
+                        src_idx=dst.index, dst_idx=src.index,
+                        distance_km=seg_dist,
+                        avg_speed_kmh=corridor.avg_speed_kmh,
+                        corridor=corridor_key,
+                        weight=1.0 / max(seg_dist, 1.0),
+                    ))
+
+        # Add self-loops for all nodes (aids GCN stability)
+        for code, node in self._nodes.items():
+            self._edges.append(EdgeInfo(
+                src=code, dst=code,
+                src_idx=node.index, dst_idx=node.index,
+                distance_km=0.0,
+                avg_speed_kmh=0.0,
+                corridor="self",
+                weight=1.0,
+            ))
+
+    def _populate_nx(self):
+        """Populate the networkx DiGraph."""
+        for code, node in self._nodes.items():
+            self._graph.add_node(
+                code,
+                index=node.index,
+                lat=node.lat,
+                lon=node.lon,
+                is_junction=node.is_junction,
+                corridors=node.corridors,
+            )
+        for edge in self._edges:
+            if edge.corridor == "self":
+                continue
+            self._graph.add_edge(
+                edge.src, edge.dst,
+                distance_km=edge.distance_km,
+                avg_speed_kmh=edge.avg_speed_kmh,
+                corridor=edge.corridor,
+                weight=edge.weight,
+            )
+
+    def _update_degrees(self):
+        for node in self._nodes.values():
+            node.degree = sum(
+                1 for e in self._edges
+                if e.src == node.code and e.corridor != "self"
+            )
+
+    # ------------------------------------------------------------------
+    # Tensor accessors for PyTorch Geometric
+    # ------------------------------------------------------------------
+
+    def edge_index(self) -> np.ndarray:
+        """
+        Return edge_index array of shape (2, E) where
+        edge_index[0] = source indices, edge_index[1] = dest indices.
+        Ready for torch.tensor(edge_index, dtype=torch.long).
+        """
+        srcs = [e.src_idx for e in self._edges]
+        dsts = [e.dst_idx for e in self._edges]
+        return np.array([srcs, dsts], dtype=np.int64)
+
+    def edge_attr(self) -> np.ndarray:
+        """
+        Return edge attribute matrix of shape (E, 3):
+        [distance_km_normalized, speed_normalized, is_self_loop]
+        """
+        max_dist = max((e.distance_km for e in self._edges if e.corridor != "self"), default=1.0)
+        max_speed = max((e.avg_speed_kmh for e in self._edges if e.corridor != "self"), default=1.0)
+        attrs = []
+        for e in self._edges:
+            attrs.append([
+                e.distance_km / max(max_dist, 1.0),
+                e.avg_speed_kmh / max(max_speed, 1.0),
+                1.0 if e.corridor == "self" else 0.0,
+            ])
+        return np.array(attrs, dtype=np.float32)
+
+    def node_features(self) -> np.ndarray:
+        """
+        Return node feature matrix of shape (N, 4):
+        [lat_norm, lon_norm, is_junction, degree_norm]
+        Useful as base node features before per-step features are added.
+        """
+        ordered = sorted(self._nodes.values(), key=lambda n: n.index)
+        max_deg = max(n.degree for n in ordered) or 1
+        feats = []
+        for n in ordered:
+            feats.append([
+                (n.lat - 8.0) / (37.0 - 8.0),    # India lat range ~8-37
+                (n.lon - 68.0) / (97.0 - 68.0),   # India lon range ~68-97
+                1.0 if n.is_junction else 0.0,
+                n.degree / max_deg,
+            ])
+        return np.array(feats, dtype=np.float32)
+
+    # ------------------------------------------------------------------
+    # Graph analytics
+    # ------------------------------------------------------------------
+
+    def get_neighbors(self, station_code: str) -> List[str]:
+        """Return list of successor station codes."""
+        return [e.dst for e in self._edges if e.src == station_code and e.corridor != "self"]
+
+    def shortest_path(self, src: str, dst: str) -> Optional[List[str]]:
+        """Shortest path between two stations (requires networkx)."""
+        if not HAS_NX or not self._graph:
+            return None
+        try:
+            return nx.shortest_path(self._graph, src, dst, weight="distance_km")
+        except (nx.NetworkXNoPath, nx.NodeNotFound):
+            return None
+
+    def cascade_subgraph(self, epicenter: str, hops: int = 3) -> List[str]:
+        """
+        Return all station codes reachable within `hops` from epicenter.
+        Used to identify cascade impact zone.
+        """
+        visited = {epicenter}
+        frontier = {epicenter}
+        for _ in range(hops):
+            next_frontier = set()
+            for code in frontier:
+                for nbr in self.get_neighbors(code):
+                    if nbr not in visited:
+                        next_frontier.add(nbr)
+                        visited.add(nbr)
+            frontier = next_frontier
+            if not frontier:
+                break
+        return list(visited)
+
+    def junction_nodes(self) -> List[NodeInfo]:
+        return [n for n in self._nodes.values() if n.is_junction]
+
+    def corridor_subgraph_edges(self, corridor_key: str) -> List[EdgeInfo]:
+        return [e for e in self._edges if e.corridor == corridor_key]
+
+    @property
+    def num_nodes(self) -> int:
+        return len(self._nodes)
+
+    @property
+    def num_edges(self) -> int:
+        return len(self._edges)
+
+    @property
+    def nx_graph(self):
+        """Access underlying networkx DiGraph (may be None if nx not installed)."""
+        return self._graph
+
+    def to_dict(self) -> dict:
+        return {
+            "num_nodes": self.num_nodes,
+            "num_edges": self.num_edges,
+            "corridors": list(CORRIDORS.keys()),
+            "junctions": [n.code for n in self.junction_nodes()],
+        }
+
+
+# ---------------------------------------------------------------------------
+# Singleton
+# ---------------------------------------------------------------------------
+_graph: Optional[CorridorGraph] = None
+
+
+def get_corridor_graph() -> CorridorGraph:
+    global _graph
+    if _graph is None:
+        _graph = CorridorGraph().build()
+    return _graph
