@@ -59,6 +59,71 @@ const STATION_TRAINS = {
     { id: 'TN035', speed: 30, delay: 8, status: 'delayed' },
     { id: 'TN036', speed: 60, delay: 0, status: 'on_time' },
   ],
+  11: [
+    { id: 'TN037', speed: 60, delay: 0, status: 'on_time' },
+    { id: 'TN038', speed: 45, delay: 7, status: 'delayed' },
+    { id: 'TN039', speed: 50, delay: 3, status: 'at_risk' },
+    { id: 'TN040', speed: 60, delay: 0, status: 'on_time' },
+    { id: 'TN041', speed: 35, delay: 9, status: 'delayed' },
+  ],
+  19: [
+    { id: 'TN042', speed: 60, delay: 0, status: 'on_time' },
+    { id: 'TN043', speed: 40, delay: 5, status: 'at_risk' },
+    { id: 'TN044', speed: 55, delay: 0, status: 'on_time' },
+  ],
+  26: [
+    { id: 'TN045', speed: 50, delay: 4, status: 'at_risk' },
+    { id: 'TN046', speed: 60, delay: 0, status: 'on_time' },
+    { id: 'TN047', speed: 35, delay: 8, status: 'delayed' },
+  ],
+  28: [
+    { id: 'TN048', speed: 60, delay: 0, status: 'on_time' },
+    { id: 'TN049', speed: 45, delay: 6, status: 'delayed' },
+    { id: 'TN050', speed: 55, delay: 1, status: 'at_risk' },
+  ],
+  29: [
+    { id: 'TN051', speed: 55, delay: 2, status: 'at_risk' },
+    { id: 'TN052', speed: 30, delay: 10, status: 'delayed' },
+    { id: 'TN053', speed: 60, delay: 0, status: 'on_time' },
+  ],
+  30: [
+    { id: 'TN054', speed: 60, delay: 0, status: 'on_time' },
+    { id: 'TN055', speed: 40, delay: 8, status: 'delayed' },
+    { id: 'TN056', speed: 50, delay: 3, status: 'at_risk' },
+  ],
+  32: [
+    { id: 'TN057', speed: 50, delay: 5, status: 'at_risk' },
+    { id: 'TN058', speed: 60, delay: 0, status: 'on_time' },
+  ],
+  39: [
+    { id: 'TN059', speed: 55, delay: 0, status: 'on_time' },
+    { id: 'TN060', speed: 35, delay: 7, status: 'delayed' },
+    { id: 'TN061', speed: 45, delay: 4, status: 'at_risk' },
+  ],
+  40: [
+    { id: 'TN062', speed: 60, delay: 0, status: 'on_time' },
+    { id: 'TN063', speed: 40, delay: 6, status: 'delayed' },
+  ],
+  43: [
+    { id: 'TN064', speed: 50, delay: 3, status: 'at_risk' },
+    { id: 'TN065', speed: 60, delay: 0, status: 'on_time' },
+  ],
+  48: [
+    { id: 'TN066', speed: 55, delay: 1, status: 'at_risk' },
+    { id: 'TN067', speed: 60, delay: 0, status: 'on_time' },
+  ],
+  68: [
+    { id: 'TN068', speed: 45, delay: 5, status: 'delayed' },
+    { id: 'TN069', speed: 60, delay: 0, status: 'on_time' },
+  ],
+  78: [
+    { id: 'TN070', speed: 60, delay: 0, status: 'on_time' },
+    { id: 'TN071', speed: 50, delay: 2, status: 'at_risk' },
+  ],
+  80: [
+    { id: 'TN072', speed: 55, delay: 1, status: 'at_risk' },
+    { id: 'TN073', speed: 60, delay: 0, status: 'on_time' },
+  ],
 };
 
 const getStationTrains = (stationId) => {

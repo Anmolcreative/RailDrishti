@@ -15,6 +15,23 @@ const getStationColor = (congestion) => {
   return '#00ff88';
 };
 
+const CUSTOM_STATION_ICONS = {
+  12: '/station-kolkata.png',    // Howrah Jn - Kolkata
+  13: '/station-delhi.png',       // New Delhi
+  14: '/station-mumbai.png',      // Mumbai CST
+  15: '/station-chennai.png',     // Chennai Central
+  17: '/station-hyderabad.png',   // Hyderabad Deccan
+  23: '/station-jaipur.png',      // Jaipur Jn
+  26: '/station-agra.png',        // Agra Cantt
+  80: '/station-amritsar.png',    // Amritsar Jn
+};
+
+// Adjustable icon sizes - modify these to change map marker size
+const ICON_SIZES = {
+  custom: { width: 34, height: 34 },      // Delhi, Mumbai, Kolkata, Chennai, Hyderabad, Jaipur
+  default: { width: 32, height: 32 },      // 94 remaining stations - ADJUST THIS!
+};
+
 const MapView = ({ trains = [], onStationClick }) => {
   const mapRef = useRef(null);
   const markersRef = useRef({});
@@ -34,16 +51,29 @@ const MapView = ({ trains = [], onStationClick }) => {
     if (!mapRef.current) return;
 
     STATIONS.forEach(station => {
-      const marker = L.circleMarker(
+      let stationIcon;
+
+      // Check if station has custom icon
+      if (CUSTOM_STATION_ICONS[station.id]) {
+        stationIcon = L.icon({
+          iconUrl: CUSTOM_STATION_ICONS[station.id],
+          iconSize: [ICON_SIZES.custom.width, ICON_SIZES.custom.height],
+          iconAnchor: [ICON_SIZES.custom.width / 2, ICON_SIZES.custom.height / 2],
+          popupAnchor: [0, -ICON_SIZES.custom.height / 2],
+        });
+      } else {
+        // Use default icon for other 90 stations
+        stationIcon = L.icon({
+          iconUrl: '/station-default.png',
+          iconSize: [ICON_SIZES.default.width, ICON_SIZES.default.height],
+          iconAnchor: [ICON_SIZES.default.width / 2, ICON_SIZES.default.height / 2],
+          popupAnchor: [0, -ICON_SIZES.default.height / 2],
+        });
+      }
+
+      const marker = L.marker(
         [station.lat, station.lng],
-        {
-          color: getStationColor(station.congestion),
-          fillColor: getStationColor(station.congestion),
-          radius: 8,
-          fillOpacity: 0.5,
-          weight: 2,
-          dashArray: '4'
-        }
+        { icon: stationIcon }
       )
       .addTo(mapRef.current)
       .bindPopup(`
