@@ -12,10 +12,16 @@ API_CONFIG_PATH = os.getenv("API_CONFIG_PATH", "backend/data/api_config.json")
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
 RAPIDAPI_HOST = os.getenv("RAPIDAPI_HOST")
 
-producer = KafkaProducer(
-    bootstrap_servers=[KAFKA_BROKER],
-    value_serializer=lambda x: json.dumps(x).encode("utf-8"),
-)
+_producer = None
+
+def get_producer():
+    global _producer
+    if _producer is None:
+        _producer = KafkaProducer(
+            bootstrap_servers='localhost:9092',
+            api_version=(2, 0, 0)
+        )
+    return _producer
 
 with open(API_CONFIG_PATH) as f:
     config = json.load(f)
@@ -103,7 +109,7 @@ while True:
                     "delay": random.randint(0, 20),
                     "timestamp": time.time()
                 }
-            producer.send("train-status", message)
+            get_producer().send("train-status", message)
             print("LIVE: " + train_no + " | " + corridor_id + " | source=" + message["data_source"])
 
     # --- SIMULATED STATIONS ---
